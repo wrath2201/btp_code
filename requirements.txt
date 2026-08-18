@@ -1,0 +1,10 @@
+# Versions confirmed working on Windows (Python 3.12) and Linux (Python 3.10).
+# Anything close should work; LightGBM is the one where a major version jump
+# can move results in the 4th decimal place.
+numpy>=1.26
+scipy>=1.11
+scikit-learn>=1.4
+pandas>=2.0
+lightgbm>=4.0
+matplotlib>=3.7
+joblib>=1.3
