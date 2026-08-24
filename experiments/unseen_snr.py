@@ -27,7 +27,10 @@ import os
 import numpy as np
 from sklearn.metrics import balanced_accuracy_score, f1_score
 
-from pipeline import SNRS, grouped_stratified_split, make_models, predict_proba
+import sys, os
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+
+from src.pipeline import SNRS, grouped_stratified_split, make_models, predict_proba
 
 MODELS = ["rf", "lgbm", "svm", "mlp"]
 

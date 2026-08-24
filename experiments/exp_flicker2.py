@@ -15,8 +15,11 @@ reading the envelope off the S-matrix, then apply the prominence test.
 import numpy as np
 from scipy.ndimage import median_filter
 from scipy.signal import hilbert
-from features import STransform
-from pqmodel import pqmodel, add_awgn
+import sys, os
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+
+from src.features import STransform
+from src.pqmodel import pqmodel, add_awgn
 
 FS, F0, NCYC = 6400.0, 50.0, 10
 N = int(FS / F0 * NCYC)

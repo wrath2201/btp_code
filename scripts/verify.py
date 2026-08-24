@@ -24,7 +24,9 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import f1_score
 
-from pipeline import grouped_stratified_split, level_name, levels_of
+import sys, os
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+from src.pipeline import grouped_stratified_split, level_name, levels_of
 
 CHANCE = 1.0 / 29
 

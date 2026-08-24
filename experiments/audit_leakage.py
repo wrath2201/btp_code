@@ -38,7 +38,10 @@ import numpy as np
 from sklearn.metrics import f1_score
 from sklearn.model_selection import train_test_split
 
-from pipeline import (grouped_stratified_split, level_name, levels_of, make_models,
+import sys, os
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+
+from src.pipeline import (grouped_stratified_split, level_name, levels_of, make_models,
                       predict_proba, scores)
 
 MODELS = ["rf", "lgbm"]          # two strongest; enough to show the effect

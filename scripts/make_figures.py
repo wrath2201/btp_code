@@ -9,11 +9,14 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
-from pqmodel import CLASS_NAMES
-from pipeline import level_name
+import sys, os
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+
+from src.pqmodel import CLASS_NAMES
+from src.pipeline import level_name
 
 _ap = argparse.ArgumentParser()
-_ap.add_argument("--results", default="results.json")
+_ap.add_argument("--results", default="results/results.json")
 _ap.add_argument("--prefix", default="fig", help="output filename prefix")
 _A = _ap.parse_args()
 PFX = _A.prefix

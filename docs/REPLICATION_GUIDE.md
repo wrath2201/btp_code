@@ -57,12 +57,12 @@ the work and re-emit my results**:
 
 ```bash
 cd pq_ensemble
-rm -f results_oof_ckpt.npz results_base_ckpt.npz results.json results_preds.npz
+rm -f results_oof_ckpt.npz results_base_ckpt.npz results/results.json results_preds.npz
 rm -rf /tmp/shards /tmp/dataset.npz
 ```
 
 If you'd rather keep mine for comparison, rename them instead and use
-`--out myresults.json` throughout.
+`--out myresults/results.json` throughout.
 
 ### On determinism
 
@@ -77,8 +77,8 @@ anything larger means something real has changed.
 ## 2. Stage 1 — validate the primitives (2 min) ← *real validation*
 
 ```bash
-python test_pqmodel.py
-python test_features.py
+python tests/test_pqmodel.py
+python tests/test_features.py
 ```
 
 These check against analytic truth, not against my outputs. The ones that matter:
@@ -107,8 +107,8 @@ True`.
 29 classes × 200 base waveforms × 5 SNR levels = 29,000 rows.
 
 ```bash
-for k in 0 1 2 3 4; do python build_dataset.py --step $k --n-base 200; done
-python build_dataset.py --merge
+for k in 0 1 2 3 4; do python scripts/build_dataset.py --step $k --n-base 200; done
+python scripts/build_dataset.py --merge
 ```
 
 One SNR level per step, ~1.5 min each. Each prints its achieved SNR — all five
@@ -134,11 +134,11 @@ after every fold, so you can run it in pieces:
 ```bash
 # one fold at a time (safe on any machine)
 for i in $(seq 1 10); do
-  python pipeline.py --data /tmp/dataset.npz --out results.json --folds 10 --max-new-folds 1
+  python scripts/run_pipeline.py --data /tmp/dataset.npz --out results/results.json --folds 10 --max-new-folds 1
 done
 
 # then the final fit + ensembles
-python pipeline.py --data /tmp/dataset.npz --out results.json --folds 10
+python scripts/run_pipeline.py --data /tmp/dataset.npz --out results/results.json --folds 10
 ```
 
 On a machine with plenty of RAM you can just run the last line and let it do all
@@ -179,8 +179,8 @@ average. It is the most informative single number in the run.
 
 Then:
 ```bash
-python verify.py --data /tmp/dataset.npz      # expect 19/19
-python make_figures.py
+python scripts/verify.py --data /tmp/dataset.npz      # expect 19/19
+python scripts/make_figures.py
 ```
 
 `verify.py` is worth reading carefully. The three shuffle controls are the ones
@@ -193,7 +193,7 @@ chance, something is leaking and every other number is void.
 ## 5. Stage 4 — the leakage audit (~3 min) ← **the most valuable single run**
 
 ```bash
-python audit_leakage.py --data /tmp/dataset.npz
+python experiments/audit_leakage.py --data /tmp/dataset.npz
 ```
 
 This deliberately runs the *wrong* split so you can measure what it buys. Each
@@ -238,7 +238,7 @@ anyone cares about.
 ## 6. Stage 5 — confidence intervals (~5 min) ← *can overturn a claim*
 
 ```bash
-python multiseed.py --mode split --seeds 0 1 2 3 4
+python experiments/multiseed.py --mode split --seeds 0 1 2 3 4
 ```
 
 Same waveforms, 5 different 70/15/15 partitions. What I measured over 4 seeds:
@@ -298,7 +298,7 @@ For a headline number you'd quote publicly, use the more expensive mode, which
 draws fresh waveforms each time (~10 min/seed, mostly feature extraction):
 
 ```bash
-python multiseed.py --mode data --seeds 1 2 3
+python experiments/multiseed.py --mode data --seeds 1 2 3
 ```
 
 ---
@@ -308,7 +308,7 @@ python multiseed.py --mode data --seeds 1 2 3
 ### 6a. The S-transform is blind to flicker at the fundamental
 
 ```bash
-python exp_flicker2.py     # ~3 min
+python experiments/exp_flicker2.py     # ~3 min
 ```
 
 Look at the row `pure / pure flicker (control)`. Every full-bandwidth
@@ -340,7 +340,7 @@ Expect ~0.001 → ~0.04, i.e. a 40–70× jump when flicker is present.
 ### 6b. Four class pairs are near-degenerate by construction
 
 ```bash
-python exp_degeneracy.py   # ~1 min
+python experiments/exp_degeneracy.py   # ~1 min
 ```
 
 This generates matched parameter pairs, measures the actual waveform difference
@@ -370,7 +370,7 @@ be almost exclusively 15↔20, 16↔21, 22↔28, 23↔29:
 ```bash
 python -c "
 import json,numpy as np; from pqmodel import CLASS_NAMES
-R=json.load(open('results.json')); cm=np.array(R['confusion_snr40'])
+R=json.load(open('results/results.json')); cm=np.array(R['confusion_snr40'])
 off=cm.copy(); np.fill_diagonal(off,0)
 for a,b in np.dstack(np.unravel_index(np.argsort(off.ravel())[::-1][:8],off.shape))[0]:
     print(f'{off[a,b]:>3}/150  c{a+1} {CLASS_NAMES[a+1]:<26} -> c{b+1} {CLASS_NAMES[b+1]}')

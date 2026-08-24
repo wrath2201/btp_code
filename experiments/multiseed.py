@@ -16,8 +16,8 @@ two independent sources of variation and they answer different questions:
       CI you want when quoting a headline result.
 
 Usage
-    python multiseed.py --mode split --seeds 0 1 2 3 4
-    python multiseed.py --mode data  --seeds 1 2 3     # rebuilds each time
+    python experiments/multiseed.py --mode split --seeds 0 1 2 3 4
+    python experiments/multiseed.py --mode data  --seeds 1 2 3     # rebuilds each time
 """
 
 from __future__ import annotations
@@ -30,7 +30,10 @@ import sys
 import numpy as np
 from sklearn.metrics import f1_score
 
-from pipeline import (grouped_stratified_split, level_name, levels_of,
+import sys, os
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+
+from src.pipeline import (grouped_stratified_split, level_name, levels_of,
                       make_models, predict_proba)
 
 MODELS = ["rf", "lgbm", "svm", "mlp"]
@@ -146,11 +149,11 @@ def main(a):
     else:
         for s in a.seeds:
             for k in range(5):
-                subprocess.run([sys.executable, "build_dataset.py", "--step",
+                subprocess.run([sys.executable, "scripts/build_dataset.py", "--step",
                                 str(k), "--n-base", str(a.n_base), "--seed",
                                 str(20260807 + s), "--shard-dir",
                                 f"data/shards_s{s}"], check=True)
-            subprocess.run([sys.executable, "build_dataset.py", "--merge",
+            subprocess.run([sys.executable, "scripts/build_dataset.py", "--merge",
                             "--shard-dir", f"data/shards_s{s}",
                             "--out", f"data/dataset_s{s}.npz"], check=True)
             d = np.load(f"data/dataset_s{s}.npz", allow_pickle=True)

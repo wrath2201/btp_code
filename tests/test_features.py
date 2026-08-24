@@ -1,8 +1,10 @@
 """Validate the S-transform against analytic cases and time the extractor."""
 import time
 import numpy as np
-from features import STransform, PQFeatureExtractor
-from pqmodel import pqmodel, add_awgn
+import sys, os
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+from src.features import STransform, PQFeatureExtractor
+from src.pqmodel import pqmodel, add_awgn
 
 FS, F0, NCYC = 6400.0, 50.0, 10
 N = int(FS / F0 * NCYC)

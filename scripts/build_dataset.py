@@ -19,8 +19,8 @@ the clean base waveforms from the same seed (cheap, ~1 s), adds noise at its
 own level, extracts features in small batches and writes a shard. Peak memory
 is a few tens of MB and any step can be re-run independently.
 
-    python build_dataset.py --step 0 ... --step 4     # one shard per SNR level
-    python build_dataset.py --merge                   # combine into dataset.npz
+    python scripts/build_dataset.py --step 0 ... --step 4     # one shard per SNR level
+    python scripts/build_dataset.py --merge                   # combine into dataset.npz
 """
 
 from __future__ import annotations
@@ -31,8 +31,11 @@ import time
 
 import numpy as np
 
-from features import PQFeatureExtractor
-from pqmodel import pqmodel, add_awgn
+import sys
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+
+from src.features import PQFeatureExtractor
+from src.pqmodel import pqmodel, add_awgn
 
 # ---- generator parameters (confirmed) -------------------------------------
 FS = 6400.0        # sampling frequency [Hz]   -> 128 samples/cycle
@@ -127,7 +130,7 @@ def merge(shard_dir, out, steps=None):
     for k in steps:
         p = os.path.join(shard_dir, f"shard_{k}.npz")
         if not os.path.exists(p):
-            raise SystemExit(f"missing {p} -- run:  python build_dataset.py "
+            raise SystemExit(f"missing {p} -- run:  python scripts/build_dataset.py "
                              f"--step {k} --n-base 200 --shard-dir {shard_dir}")
         d = np.load(p, allow_pickle=True)
         Xs.append(d["X"]); ys.append(d["y"]); gs.append(d["group"]); ss.append(d["snr"])

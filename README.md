@@ -54,21 +54,21 @@ is significantly worse** (−0.0084, 0/5, p = 0.016).
 pip install -r requirements.txt
 
 # build the dataset (~10 min; steps 0-4 are noisy levels, 5 is noise-free)
-python build_dataset.py --step 0 --n-base 200 --shard-dir data/shards
-python build_dataset.py --step 1 --n-base 200 --shard-dir data/shards
-python build_dataset.py --step 2 --n-base 200 --shard-dir data/shards
-python build_dataset.py --step 3 --n-base 200 --shard-dir data/shards
-python build_dataset.py --step 4 --n-base 200 --shard-dir data/shards
-python build_dataset.py --merge --steps 0 1 2 3 4 --shard-dir data/shards --out data/dataset.npz
+python scripts/build_dataset.py --step 0 --n-base 200 --shard-dir data/shards
+python scripts/build_dataset.py --step 1 --n-base 200 --shard-dir data/shards
+python scripts/build_dataset.py --step 2 --n-base 200 --shard-dir data/shards
+python scripts/build_dataset.py --step 3 --n-base 200 --shard-dir data/shards
+python scripts/build_dataset.py --step 4 --n-base 200 --shard-dir data/shards
+python scripts/build_dataset.py --merge --steps 0 1 2 3 4 --shard-dir data/shards --out data/dataset.npz
 
 # train and evaluate (~25 min)
-python pipeline.py --data data/dataset.npz --out results.json --folds 10
+python scripts/run_pipeline.py --data data/dataset.npz --out results/results/results.json --folds 10
 
 # checks, figures, audits
-python verify.py --data data/dataset.npz          # 19 correctness controls
-python make_figures.py
-python audit_leakage.py --data data/dataset.npz   # the leakage measurement
-python multiseed.py --mode split --seeds 0 1 2 3 4
+python scripts/verify.py --data data/dataset.npz          # 19 correctness controls
+python scripts/make_figures.py
+python experiments/audit_leakage.py --data data/dataset.npz   # the leakage measurement
+python experiments/multiseed.py --mode split --seeds 0 1 2 3 4
 ```
 
 `--steps 0 1 2 3 4` on the merge is not optional: without it the merge sweeps up
@@ -107,6 +107,32 @@ checkpoints after every fold.
 
 Generated data is not committed — `build_dataset.py` reproduces it
 deterministically from a fixed seed in about ten minutes.
+
+## DASNet (deep-learning track)
+
+`DASNet` (Differentiable Adaptive Stockwell Network) is an end-to-end model
+whose three components each target a documented failure mode of the feature
+ensemble:
+
+| Component | File | Motivated by |
+|---|---|---|
+| Learnable Stockwell window law `sigma_t(f) = c/f^p * exp(delta_f)` | `src/dst.py` | Finding 1: fixed `1/f` window is blind to flicker at 50 Hz |
+| SNR-conditioned CNN (FiLM on measured `snr_est_db`) | `src/dasnet.py` | 0.21 F1 unseen-SNR extrapolation gap (`unseen_snr.json`) |
+| Optional evidential Dirichlet head | `src/dasnet.py` | Finding 2: four near-degenerate class pairs with AUC ceilings |
+
+The DST layer reproduces the classical S-transform bit-exactly at its
+initialization (`tests/test_dst.py`) and is trained under the SAME
+leakage-free group split, noise realizations, and metrics as the ensemble
+(`scripts/run_dasnet.py`). Requires PyTorch (Python <= 3.13 venv):
+
+```
+python scripts/build_waveforms.py          # raw waveforms, identical noise draws
+python scripts/run_dasnet.py --pilot       # smoke test
+python scripts/run_dasnet.py --epochs 40   # full run -> results/dasnet_results.json
+```
+
+Ablations: `--no-learnable-dst` (frozen 1/f law), `--no-film`,
+`--head evidential`, `--no-aug`.
 
 ---
 

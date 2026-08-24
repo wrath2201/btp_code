@@ -365,15 +365,15 @@ be interpreted.
 | `test_pqmodel.py`, `test_features.py` | port and transform validation |
 | `exp_flicker*.py` | the four flicker-detector experiments |
 | `exp_degeneracy.py` | matched-filter ceiling analysis |
-| `results.json`, `unseen_snr.json` | all metrics |
+| `results/results.json`, `unseen_snr.json` | all metrics |
 | `fig1..fig4*.png` | SNR degradation, class×SNR heatmap, confusions, importances |
 
 Reproduce:
 ```bash
-for k in 0 1 2 3 4; do python build_dataset.py --step $k --n-base 200; done
-python build_dataset.py --merge
-python pipeline.py --data /tmp/dataset.npz --out results.json --folds 10
-python verify.py  &&  python make_figures.py
-for k in 0 1 2 3 4; do python unseen_snr.py --only $k; done
-python unseen_snr.py --merge
+for k in 0 1 2 3 4; do python scripts/build_dataset.py --step $k --n-base 200; done
+python scripts/build_dataset.py --merge
+python scripts/run_pipeline.py --data /tmp/dataset.npz --out results/results.json --folds 10
+python scripts/verify.py  &&  python scripts/make_figures.py
+for k in 0 1 2 3 4; do python experiments/unseen_snr.py --only $k; done
+python experiments/unseen_snr.py --merge
 ```

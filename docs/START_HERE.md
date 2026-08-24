@@ -85,7 +85,7 @@ if you set aside four fault types that are essentially impossible to tell apart
 
 | File | What it is |
 |---|---|
-| `results.json` | Every number, saved. Machine-readable. |
+| `results/results.json` | Every number, saved. Machine-readable. |
 | `fig1_snr_degradation.png` | How the score falls as static increases |
 | `fig2_class_snr_heatmap.png` | **The most useful picture.** Score for each of the 29 faults at each static level. Green = good. |
 | `fig3_confusion.png` | What gets mistaken for what |
@@ -113,8 +113,8 @@ most important files in the folder.
 | `test_features.py` | Do the 191 measurements measure what they claim? | ~30 sec |
 
 ```
-python test_pqmodel.py
-python test_features.py
+python tests/test_pqmodel.py
+python tests/test_features.py
 ```
 
 **These two are different in kind from everything else here.** They check against
@@ -149,8 +149,8 @@ assertions.
 Two are worth running to see the evidence directly:
 
 ```
-python exp_flicker2.py      (~3 min)
-python exp_degeneracy.py    (~1 min)
+python experiments/exp_flicker2.py      (~3 min)
+python experiments/exp_degeneracy.py    (~1 min)
 ```
 
 In `exp_flicker2.py`, look at the row labelled `pure / pure flicker (control)`.
@@ -179,7 +179,7 @@ report as the thing that finally did.
 | `unseen_snr.py` | What happens at a noise level the system was never trained on? | ~5 min |
 
 ```
-python multiseed.py --mode split --seeds 0 1 2 3 4
+python experiments/multiseed.py --mode split --seeds 0 1 2 3 4
 ```
 
 `multiseed.py` re-runs everything with five different random splits. The answer:
@@ -188,8 +188,8 @@ difference smaller than about 0.01 is noise, not a finding — useful discipline
 before you claim one method beat another.
 
 ```
-python unseen_snr.py --only 0     (then --only 1, 2, 3, 4)
-python unseen_snr.py --merge
+python experiments/unseen_snr.py --only 0     (then --only 1, 2, 3, 4)
+python experiments/unseen_snr.py --merge
 ```
 
 `unseen_snr.py` trains on four noise levels and tests on the fifth, which it has
@@ -252,7 +252,7 @@ cd \BTP\pq_ensemble
 Otherwise the programs find my saved answers and skip all the work, and you'll
 have "reproduced" nothing. Type:
 ```
-del results_oof_ckpt.npz results_base_ckpt.npz results.json results_preds.npz
+del results_oof_ckpt.npz results_base_ckpt.npz results/results.json results_preds.npz
 ```
 If it says "Could not find" — that's fine, it just means they were already gone.
 
@@ -262,12 +262,12 @@ Six lines. Type one, press Enter, **wait for it to finish**, then type the next.
 Each of the first five takes about 90 seconds.
 
 ```
-python build_dataset.py --step 0 --n-base 200 --shard-dir data\shards
-python build_dataset.py --step 1 --n-base 200 --shard-dir data\shards
-python build_dataset.py --step 2 --n-base 200 --shard-dir data\shards
-python build_dataset.py --step 3 --n-base 200 --shard-dir data\shards
-python build_dataset.py --step 4 --n-base 200 --shard-dir data\shards
-python build_dataset.py --merge --steps 0 1 2 3 4 --shard-dir data\shards --out data\dataset.npz
+python scripts/build_dataset.py --step 0 --n-base 200 --shard-dir data\shards
+python scripts/build_dataset.py --step 1 --n-base 200 --shard-dir data\shards
+python scripts/build_dataset.py --step 2 --n-base 200 --shard-dir data\shards
+python scripts/build_dataset.py --step 3 --n-base 200 --shard-dir data\shards
+python scripts/build_dataset.py --step 4 --n-base 200 --shard-dir data\shards
+python scripts/build_dataset.py --merge --steps 0 1 2 3 4 --shard-dir data\shards --out data\dataset.npz
 ```
 
 ⚠ **The `--steps 0 1 2 3 4` on the last line is not optional.** Without it, the
@@ -292,7 +292,7 @@ does when nothing is working against it.
 
 Build the clean batch once (this does not disturb what you already have):
 ```
-python build_dataset.py --step 5 --n-base 200 --shard-dir data\shards
+python scripts/build_dataset.py --step 5 --n-base 200 --shard-dir data\shards
 ```
 
 Then pick which dataset you want. **These are two different experiments** — see
@@ -300,25 +300,25 @@ Part 7b for which to use when.
 
 **A — clean data only** (the "best case" number):
 ```
-python build_dataset.py --merge --steps 5 --shard-dir data\shards --out data\dataset_clean.npz
+python scripts/build_dataset.py --merge --steps 5 --shard-dir data\shards --out data\dataset_clean.npz
 ```
 
 **B — clean added as a 6th level alongside the noisy ones:**
 ```
-python build_dataset.py --merge --steps 0 1 2 3 4 5 --shard-dir data\shards --out data\dataset_all6.npz
+python scripts/build_dataset.py --merge --steps 0 1 2 3 4 5 --shard-dir data\shards --out data\dataset_all6.npz
 ```
 
 ⚠ **Once shard 5 exists, a plain `--merge` with no `--steps` picks up all six.**
 If you want your original 5-level dataset back, say so explicitly:
 ```
-python build_dataset.py --merge --steps 0 1 2 3 4 --shard-dir data\shards --out data\dataset.npz
+python scripts/build_dataset.py --merge --steps 0 1 2 3 4 --shard-dir data\shards --out data\dataset.npz
 ```
 
 ### Step 2 — Teach and examine (~25 minutes)
 
 One line. Then go make tea.
 ```
-python pipeline.py --data data\dataset.npz --out results.json --folds 10
+python scripts/run_pipeline.py --data data\dataset.npz --out results/results.json --folds 10
 ```
 
 It prints progress as it goes. Near the end you should see:
@@ -336,7 +336,7 @@ about three decimal places.**
 out of memory. Run this line ten times instead — it does one chunk at a time and
 remembers where it got to:
 ```
-python pipeline.py --data data\dataset.npz --out results.json --folds 10 --max-new-folds 1
+python scripts/run_pipeline.py --data data\dataset.npz --out results/results.json --folds 10 --max-new-folds 1
 ```
 Then run the full line above once at the end.
 
@@ -344,9 +344,9 @@ Then run the full line above once at the end.
 dataset and give the answers a different name (so your noisy results aren't
 overwritten):
 ```
-del results_clean_oof_ckpt.npz results_clean_base_ckpt.npz results_clean.json results_clean_preds.npz
-python pipeline.py --data data\dataset_clean.npz --out results_clean.json --folds 10
-python make_figures.py --results results_clean.json --prefix figclean
+del results_clean_oof_ckpt.npz results_clean_base_ckpt.npz results/results_clean.json results_clean_preds.npz
+python scripts/run_pipeline.py --data data\dataset_clean.npz --out results/results_clean.json --folds 10
+python scripts/make_figures.py --results results/results_clean.json --prefix figclean
 ```
 The clean run is much faster — about 4 minutes, because there are 5,800
 recordings instead of 29,000.
@@ -354,7 +354,7 @@ recordings instead of 29,000.
 ### Step 3 — Prove we didn't cheat (~1 minute)
 
 ```
-python verify.py --data data\dataset.npz
+python scripts/verify.py --data data\dataset.npz
 ```
 You want the last line to say **`19/19 checks passed`**. See Part 6 for why this
 is the most important thing on the page.
@@ -362,7 +362,7 @@ is the most important thing on the page.
 ### Step 4 — Draw the pictures (~10 seconds)
 
 ```
-python make_figures.py
+python scripts/make_figures.py
 ```
 Four `.png` files appear in the folder. Double-click them to view. Start with
 `fig2_class_snr_heatmap.png`.
@@ -370,7 +370,7 @@ Four `.png` files appear in the folder. Double-click them to view. Start with
 ### Step 5 — The leakage test (~3 minutes)
 
 ```
-python audit_leakage.py --data data\dataset.npz
+python experiments/audit_leakage.py --data data\dataset.npz
 ```
 Explained in Part 6. This is the most interesting thing you'll run.
 
