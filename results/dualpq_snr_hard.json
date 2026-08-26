@@ -1,0 +1,102 @@
+{
+ "model": "dualpq",
+ "config": {
+  "gate": "snr_hard",
+  "data_wave": "data/waveforms.npz",
+  "data_feat": "data/dataset.npz",
+  "out": "results/dualpq_snr_hard.json",
+  "epochs": 40,
+  "batch": 32,
+  "lr": 0.001,
+  "lr_dst": 0.005,
+  "warmup": 3,
+  "patience": 12,
+  "seed": 0,
+  "split_seed": 0,
+  "workers": 2,
+  "head": "softmax",
+  "no_aug": false,
+  "p_aug": 0.5,
+  "limit_groups": 30,
+  "max_temp": 74,
+  "no_throttle": false,
+  "pilot": false,
+  "n_params": 1529404,
+  "best_epoch": 30,
+  "wall_min": 160.96212859618342
+ },
+ "val": {
+  "macro_f1": 0.7373247837284103,
+  "balanced_acc": 0.7375478927203064,
+  "accuracy": 0.7375478927203065
+ },
+ "test": {
+  "macro_f1": 0.7252202375633807,
+  "balanced_acc": 0.7258620689655172,
+  "accuracy": 0.7258620689655172
+ },
+ "test_per_snr": {
+  "999": {
+   "macro_f1": 0.9149644404486685,
+   "balanced_acc": 0.9160919540229884,
+   "accuracy": 0.9160919540229885
+  },
+  "40": {
+   "macro_f1": 0.9172443128266773,
+   "balanced_acc": 0.9183908045977011,
+   "accuracy": 0.9183908045977012
+  },
+  "30": {
+   "macro_f1": 0.8973740630955065,
+   "balanced_acc": 0.8988505747126434,
+   "accuracy": 0.8988505747126436
+  },
+  "20": {
+   "macro_f1": 0.7824356722230881,
+   "balanced_acc": 0.7816091954022989,
+   "accuracy": 0.7816091954022989
+  },
+  "10": {
+   "macro_f1": 0.5844451868782955,
+   "balanced_acc": 0.586206896551724,
+   "accuracy": 0.5862068965517241
+  },
+  "0": {
+   "macro_f1": 0.24746179340909227,
+   "balanced_acc": 0.25402298850574717,
+   "accuracy": 0.2540229885057471
+  }
+ },
+ "gate_stats": {
+  "0": {
+   "mean": 0.0,
+   "median": 0.0,
+   "std": 0.0
+  },
+  "999": {
+   "mean": 0.9919540286064148,
+   "median": 1.0,
+   "std": 0.0893377736210823
+  },
+  "40": {
+   "mean": 0.9885057210922241,
+   "median": 1.0,
+   "std": 0.10659333318471909
+  },
+  "10": {
+   "mean": 0.0,
+   "median": 0.0,
+   "std": 0.0
+  },
+  "20": {
+   "mean": 0.8264367580413818,
+   "median": 1.0,
+   "std": 0.37873345613479614
+  },
+  "30": {
+   "mean": 0.9804597496986389,
+   "median": 1.0,
+   "std": 0.1384139209985733
+  }
+ }
+}

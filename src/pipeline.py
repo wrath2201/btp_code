@@ -365,8 +365,7 @@ def run(data_path, out_path, n_folds=10, seed=0, n_jobs=2, fast=False,
     stk = Pipeline([("qt", QuantileTransformer(output_distribution="normal",
                                                n_quantiles=1000,
                                                random_state=seed)),
-                    ("lr", LogisticRegression(max_iter=3000, C=1.0,
-                                              multi_class="multinomial"))])
+                    ("lr", LogisticRegression(max_iter=3000, C=1.0))])
     t0 = time.perf_counter()
     stk.fit(Mtr, ytr)
     timings["fit_stack"] = time.perf_counter() - t0
