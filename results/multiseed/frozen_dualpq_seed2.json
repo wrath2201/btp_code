@@ -1,0 +1,48 @@
+{
+ "model": "frozen_dualpq",
+ "config": {
+  "gate": "concat",
+  "data_wave": "data/waveforms.npz",
+  "data_feat": "data/dataset.npz",
+  "out": "results/multiseed/frozen_dualpq_seed2.json",
+  "checkpoint_dir": "results/multiseed",
+  "epochs": 40,
+  "batch": 32,
+  "lr": 0.001,
+  "warmup": 3,
+  "patience": 12,
+  "seed": 2,
+  "split_seed": 0,
+  "workers": 2,
+  "limit_groups": 0,
+  "max_temp": 74,
+  "no_throttle": false,
+  "best_epoch": 5
+ },
+ "val": {
+  "macro_f1": 0.03163995499297807
+ },
+ "test": {
+  "macro_f1": 0.021832920408147712
+ },
+ "test_per_snr": {
+  "999": {
+   "macro_f1": 0.01638538627369226
+  },
+  "40": {
+   "macro_f1": 0.027447690155813255
+  },
+  "30": {
+   "macro_f1": 0.01919025250492017
+  },
+  "20": {
+   "macro_f1": 0.019828338018896385
+  },
+  "10": {
+   "macro_f1": 0.02011471244190291
+  },
+  "0": {
+   "macro_f1": 0.005432566562018813
+  }
+ }
+}

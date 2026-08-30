@@ -1,0 +1,46 @@
+{
+ "model": "mgcnn_sdtransformer",
+ "config": {
+  "data_wave": "data/waveforms.npz",
+  "data_feat": "data/dataset.npz",
+  "out": "results/mgcnn_sdtransformer_seed2.json",
+  "save_ckpt": "results/multiseed/mgcnn_sdtransformer_seed2_best.pt",
+  "epochs": 40,
+  "batch": 64,
+  "lr": 0.001,
+  "warmup": 3,
+  "patience": 12,
+  "seed": 2,
+  "split_seed": 2,
+  "workers": 2,
+  "max_temp": 74,
+  "no_throttle": false,
+  "best_epoch": 37
+ },
+ "val": {
+  "macro_f1": 0.6848346406249636
+ },
+ "test": {
+  "macro_f1": 0.6737253335573598
+ },
+ "test_per_snr": {
+  "999": {
+   "macro_f1": 0.8331201377007593
+  },
+  "40": {
+   "macro_f1": 0.8262828023213482
+  },
+  "30": {
+   "macro_f1": 0.8101476905915297
+  },
+  "20": {
+   "macro_f1": 0.7675584867766916
+  },
+  "10": {
+   "macro_f1": 0.5677249122566557
+  },
+  "0": {
+   "macro_f1": 0.23681055342013174
+  }
+ }
+}
