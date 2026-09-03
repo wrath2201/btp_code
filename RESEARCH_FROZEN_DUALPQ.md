@@ -4,7 +4,7 @@
 I previously verified that Seed 0 and Seed 3 both predict all 29 unique classes. Seed 3 did not 'drop' 5 classes, but rather suffered from extreme class bias (predicting some classes 600+ times and others only 25 times), which severely damaged its F1 score. This confirms the original failure was an optimization collapse (losing discriminative power), not a hardcoded bug.
 
 ## 2. Exact Frozen-DualPQ architecture
-The **Frozen-DASNet DualPQ** model uses the exact same architecture as the original DualPQ-D. However, the Deep Expert (DASNet with Learnable-DST) is loaded with the previously trained weights and completely **FROZEN** (requires_grad = False). The Classical Expert (MLP) and the Concatenation Fusion Head remain trainable. This isolates the gradients: we are testing if end-to-end updating of the DST/CNN branch contributes to the instability.
+The **Frozen-DASNet DualPQ** model uses the exact same architecture as the original DualPQ-D. However, the Deep Expert (DASNet with Learnable-DST) is loaded with the previously trained weights and completely **FROZEN** (requires_grad = False). The Classical Expert (MLP) and the Concatenation Fusion Head remain trainable. This tests the hypothesis of whether end-to-end updating of the DST/CNN branch contributes to the instability.
 
 ## 3. Trainable/frozen parameter counts
 - **Total Parameters:** 1,536,828
@@ -45,10 +45,10 @@ The standard deviation went from **±15.58%** to **±1.08%**.
 Variance was massively reduced, eliminating the catastrophic optimization collapses seen in Seeds 2 and 3 of the original run.
 
 ## 9. Does the experiment support the optimization-instability hypothesis?
-Yes. These results provide strong evidence that end-to-end joint optimization of the Deep/DST branch contributes to the observed instability. By isolating the Deep branch from the fusion gradients, the catastrophic failures disappeared.
+Yes. These results are consistent with the hypothesis that end-to-end joint optimization of the Deep/DST branch contributes to the observed instability. By freezing the Deep branch, the catastrophic failures disappeared.
 
 ## 10. Recommended next experiment
-Since the representations themselves are fundamentally complementary (as proven by the stable high performance here), but end-to-end training destabilizes them, the next logical step is to explore the precise optimization dynamics on the original end-to-end model to pinpoint *why* the instability occurs, or explore an alternate fusion mechanism (like Transformer cross-attention in MGCNN) that naturally regulates the gradient flow.
+Since the representations themselves are fundamentally complementary (as evidenced by the stable high performance here), but end-to-end training destabilizes them, the next logical step is to explore the precise optimization dynamics on the original end-to-end model. We hypothesize that gradient conflicts or similar optimization issues may occur, which requires further investigation, or one could explore an alternate fusion mechanism (like Transformer cross-attention in MGCNN) that naturally regulates the gradient flow.
 
 ---
 ### Did freezing the experts make DualPQ reliably reproducible?

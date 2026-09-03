@@ -2,7 +2,7 @@
 
 > [!WARNING]
 > **Historical / Proposal Document**
-> This document is the original project proposal and contains early hypotheses and claims (e.g., claiming novelty for DASNet/DST) that have since been revised. DASNet and DST are recognized as external/pre-existing baselines. The final authoritative methodology and novelty claims are documented in `README.md` and `PUBLICATION_AUDIT.md`.
+> This document is the original project proposal and contains early hypotheses and claims that have since been revised. While DASNet is a project-developed architecture, the Differentiable Stockwell Transform (DST) relies on established mathematical formulations and is not our invention. The final authoritative methodology and novelty claims are documented in `README.md` and `PUBLICATION_AUDIT.md`.
 
 **Formal Proposal for Conference Paper Architecture**
 

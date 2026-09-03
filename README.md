@@ -20,7 +20,7 @@ Frozen-DASNet DualPQ is our proposed fusion strategy. It combines a pretrained, 
 ## Architecture
 
 ```text
-1024-point waveform
+1280-point waveform
         ↓
 Pretrained DASNet
         ↓
@@ -39,19 +39,19 @@ features ───────→ Trainable MLP    │
 
 ## Model Provenance & Our Contributions
 
-We do not claim ownership or novelty for the underlying DASNet/DST architecture, MGCNN-SDTransformer architecture, or established classical signal-processing features. Our methodological contribution is the specific decoupled frozen-DASNet fusion strategy and its evaluation under the controlled benchmark protocol.
+We do not claim ownership or novelty for the MGCNN-SDTransformer architecture, established classical signal-processing features, or the mathematical formulation of the Differentiable Stockwell Transform (DST). Our methodological contribution encompasses the specific decoupled frozen-DASNet fusion strategy and its evaluation under the controlled benchmark protocol.
 
 | Component | Provenance | Role |
 |---|---|---|
 | **Classical Ensemble** | Our implementation of established methods | Classical baseline |
-| **DASNet** | External/existing architecture | Deep baseline / pretrained representation |
+| **DASNet** | Project-developed deep PQD architecture | Deep baseline / pretrained representation |
 | **MGCNN-SDTransformer** | External published method (Jiang et al., 2025) | Benchmark |
 | **Original DualPQ-D** | Our proposed initial architecture | Initial hybrid experiment |
 | **Frozen-DASNet DualPQ** | Our final proposed method | Main contribution |
 
 > [!WARNING]
 > **IMPORTANT FOR PAPER AUTHORS:**
-> DASNet, DST, and MGCNN-SDTransformer must be presented as existing methods/baselines. They are not our inventions. The original DualPQ-D and Frozen-DASNet DualPQ are our proposed research contributions. Classical physical features are established representations; their integration into our proposed fusion framework is part of our work.
+> MGCNN-SDTransformer must be presented as an existing method/baseline. The DST is an existing mathematical formulation. DASNet (the architecture applying DST), the original DualPQ-D, and Frozen-DASNet DualPQ are our proposed research contributions. Classical physical features are established representations; their integration into our proposed fusion framework is part of our work.
 
 ## Final Results
 
@@ -82,7 +82,7 @@ The table below details the performance of the final proposed method (Frozen-DAS
 
 Our methodology evolved sequentially through rigorous testing:
 1. **Classical Baseline**: Found to be robust, but fundamentally limited on certain indistinguishable classes.
-2. **DASNet Baseline**: Implemented an existing deep architecture, but found it severely degraded under extreme noise (10 dB, 0 dB).
+2. **DASNet Baseline**: Implemented a project-developed deep architecture, but found it severely degraded under extreme noise (10 dB, 0 dB).
 3. **Original DualPQ-D**: Combined deep and classical features end-to-end, but observed severe seed-to-seed instability (±15.58%).
 4. **Frozen-DASNet DualPQ**: Decoupled the optimization by freezing the deep branch, resulting in stable, superior performance. The observed seed instability in the original architecture is consistent with difficult joint optimization dynamics.
 
@@ -90,7 +90,7 @@ Our methodology evolved sequentially through rigorous testing:
 
 Our rigorously controlled evaluation protocol includes:
 - **29 Classes**: Synthetic dataset generated using the mathematical model by Igual et al.
-- **Waveform Length**: 1024 points (downsampled from generated 1280 to standard dimensions).
+- **Waveform Length**: 1280 points (10 cycles at 6400Hz).
 - **Grouped Stratified Split**: Waveform-grouped train/validation/test splitting prevents cross-variant leakage between partitions. Noise variants of the same base waveform are kept in the same split.
 - **Severe Noise Conditions**: Clean, 40 dB, 30 dB, 20 dB, 10 dB, and 0 dB evaluated.
 - **Five Independent Seeds**: All deep/hybrid models trained across seeds 0, 1, 2, 3, and 4 to accurately measure variance.
@@ -105,7 +105,11 @@ Our rigorously controlled evaluation protocol includes:
 
 ## Reproducibility & Installation
 
-The project uses two separate environments to avoid dependency conflicts.
+The dependency minimums are declared in `requirements.txt`. The environments *actually tested* during development and validation are:
+- Linux: Python 3.10.12, CUDA 12.6
+- Windows: Python 3.12, CUDA 12.6
+
+The project uses two separate requirements files to avoid dependency conflicts.
 For classical baselines and dataset generation:
 ```bash
 pip install -r requirements.txt

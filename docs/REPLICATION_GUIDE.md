@@ -36,17 +36,14 @@ So: Stages 3–4 build understanding; Stages 2, 5, 6, 7 build evidence.
 
 ## 1. Setup
 
+The dependency minimums are declared in `requirements.txt`. The environments that were *actually tested* during development and validation are:
+- Linux: Python 3.10.12, CUDA 12.6
+- Windows: Python 3.12, CUDA 12.6
+
+For deep-learning models (DASNet, MGCNN, DualPQ), you must also install PyTorch as specified in `requirements-deep.txt`:
 ```bash
-python -m venv .venv && source .venv/bin/activate    # Windows: .venv\Scripts\activate
-pip install numpy scipy scikit-learn pandas lightgbm matplotlib joblib
-```
-
-Versions I used. Anything close should work; LightGBM is the one where a major
-version jump can move the 4th decimal.
-
-```
-python 3.10.12   numpy 2.2.6    scipy 1.15.3     scikit-learn 1.7.2
-pandas 2.3.3     lightgbm 4.7.0 matplotlib 3.10.9 joblib 1.5.3
+pip install -r requirements.txt
+pip install -r requirements-deep.txt
 ```
 
 ### ⚠ Delete the checkpoints before you start

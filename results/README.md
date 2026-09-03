@@ -14,7 +14,7 @@ These are the files that support the final reported metrics (e.g., Frozen-DASNet
 - `mgcnn_sdtransformer_seed*_preds.npz` & `*.json`: The reimplemented MGCNN-SDTransformer baseline from Jiang et al., evaluated across 5 seeds under our protocol.
 - `dasnet_ablation_nodst*`: Diagnostics removing the learnable DST from DASNet.
 - `unseen_snr.json`: Leave-one-SNR-out diagnostic tests.
-- `leakage_audit.json`: The statistical proof of why row-based splitting inflates scores.
+- `leakage_audit.json`: The leakage audit demonstrating the effect of row-level splitting.
 
 ## 3. Historical / Superseded Experiments
 - `dualpq_feature_learned*`, `dualpq_snr_hard*`, `dualpq_snr_learned*`: Original DualPQ-D architectures and early end-to-end fusion diagnostics that exhibited severe seed instability.

@@ -22,7 +22,7 @@ Our research evolved through several stages:
 
 ### 1. The Baselines
 - **Classical Ensemble:** We built a baseline that measures 191 specific handcrafted quantities (like how far the voltage dipped) and feeds them into standard machine learning models.
-- **DASNet (Deep Baseline):** We evaluated an existing deep-learning architecture that learns features directly from the raw waveform using a Learnable Discrete Stockwell Transform.
+- **DASNet (Deep Baseline):** We evaluated a project-developed deep-learning architecture that learns features directly from the raw waveform using a Learnable Discrete Stockwell Transform.
 - **MGCNN-SDTransformer:** An external published baseline (Jiang et al., 2025) that we reimplemented and evaluated under our rigorous benchmark.
 
 ### 2. The Initial DualPQ-D Architecture
