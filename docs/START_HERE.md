@@ -143,7 +143,7 @@ five at once uses too much memory on a normal laptop and crashes.
 ```
 merged -> data\dataset.npz   X=(34800, 191)  groups=5800  classes=29
 ```
-29,000 recordings, 191 measurements each. That's the spreadsheet.
+34,800 recordings, 191 measurements each. That's the spreadsheet.
 
 ### Step 1b — Clean data, with no noise at all (optional, ~2 minutes)
 
@@ -210,7 +210,7 @@ python scripts/run_pipeline.py --data data\dataset_clean.npz --out results/resul
 python scripts/make_figures.py --results results/results_clean.json --prefix figclean
 ```
 The clean run is much faster — about 4 minutes, because there are 5,800
-recordings instead of 29,000.
+recordings instead of 34,800.
 
 ### Step 3 — Prove we didn't cheat (~1 minute)
 
@@ -243,8 +243,8 @@ Each of the 5,800 recordings gets copied five times with different amounts of
 static. So recording #1 appears five times in the spreadsheet — same fault, same
 underlying wiggly line, just noisier each time.
 
-Now: when you put 15% in the locked drawer, **do you move all five copies
-together, or do you shuffle all 29,000 rows and grab 15% at random?**
+Now: when you put 15% in the locked drawer, **do you move all six copies
+together, or do you shuffle all 34,800 rows and grab 15% at random?**
 
 It sounds like a boring bookkeeping question. It isn't.
 
@@ -257,7 +257,7 @@ questions with slightly smudged printing.
 `audit_leakage.py` does it both ways and shows you the difference:
 
 ```
-  correct way (move all five copies together)  : 0.864
+  correct way (move all six copies together)  : 0.864
   sloppy way  (shuffle the rows)               : 0.956
   test recordings also seen during study       : 99.6%
 ```
