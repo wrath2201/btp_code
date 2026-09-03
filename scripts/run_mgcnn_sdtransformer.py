@@ -234,11 +234,16 @@ def main():
     with open(args.out, "w") as f:
         json.dump(res, f, indent=1)
         
-    # Save predictions array
+    # Save predictions array.
+    # Labels are stored in 1..29 to match src/pipeline.py and
+    # scripts/run_dasnet.py, which both emit `argmax + 1`. Training uses 0..28
+    # because cross_entropy requires it, so +1 is applied only on the way out.
+    # Mixing the two conventions shifts every per-class attribution by one
+    # class -- that is what corrupted results/per_class/summary.json.
     np.savez_compressed(
         args.out.replace(".json", "_preds.npz"),
-        yte=trues,
-        yp=preds,
+        yte=trues + 1,
+        yp=preds + 1,
         ste=st
     )
         
