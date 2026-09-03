@@ -4,8 +4,8 @@ pipeline.py -- splits, base models, ensembles and evaluation.
 Protocol
 --------
 1. Groups (= base waveforms) are split 70/15/15 into train / val / test,
-   stratified by class. All 5 SNR copies of a waveform stay together, so no
-   noise-augmented sibling of a test waveform is ever seen in training.
+   stratified by class. All evaluation-condition copies of a waveform stay together, so no
+   model can "cheat" by memorizing the base waveform in training and recognizing it in testing.
 2. StratifiedGroupKFold(10) *inside the training partition* produces
    out-of-fold class probabilities for every base model. These OOF
    probabilities -- never in-fold predictions -- are what the stacking

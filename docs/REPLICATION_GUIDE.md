@@ -112,7 +112,7 @@ True`.
 29 classes × 200 base waveforms × 6 evaluation conditions = 34,800 rows.
 
 ```bash
-for k in 0 1 2 3 4; do python scripts/build_dataset.py --step $k --n-base 200; done
+for k in 0 1 2 3 4 5; do python scripts/build_dataset.py --step $k --n-base 200; done
 python scripts/build_dataset.py --merge
 ```
 

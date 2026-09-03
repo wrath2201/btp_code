@@ -1,6 +1,6 @@
 """
 run_frozen_dualpq.py -- train Frozen-DASNet DualPQ.
-Only the Deep Expert (DASNet backbone) is frozen with pretrained weights.
+Only the Deep Expert (DASNet backbone) is frozen with stage-1-trained representation weights.
 The Classical MLP and Fusion head are fully trainable.
 """
 
@@ -75,7 +75,7 @@ class PQDataset(Dataset):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--gate", default="concat", choices=["concat", "hard_snr", "soft_snr", "soft_feat"])
+    parser.add_argument("--gate", default="concat", choices=["concat", "snr_hard", "snr_learned", "feature_learned"])
     parser.add_argument("--data-wave", default="data/waveforms.npz")
     parser.add_argument("--data-feat", default="data/dataset.npz")
     parser.add_argument("--out", required=True, help="Path to save JSON results")
@@ -136,10 +136,10 @@ def main():
     print("Initializing Frozen-DASNet DualPQ...")
     model = DualPQNet(gate_type=args.gate, n_samples=W.shape[1]).to(device)
     
-    # Load Pretrained DASNet weights into the Deep Expert
+    # Load stage-1-trained DASNet weights into the Deep Expert
     dasnet_ckpt = os.path.join(args.checkpoint_dir, f"dasnet_seed{args.seed}_best.pt")
     if not os.path.exists(dasnet_ckpt):
-        raise FileNotFoundError(f"Cannot find pretrained DASNet checkpoint: {dasnet_ckpt}")
+        raise FileNotFoundError(f"Cannot find stage-1-trained DASNet checkpoint: {dasnet_ckpt}")
         
     print(f"Loading weights from {dasnet_ckpt}")
     state = torch.load(dasnet_ckpt, map_location=device, weights_only=True)

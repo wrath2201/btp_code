@@ -4,13 +4,14 @@ build_dataset.py -- generate the multi-SNR PQ dataset and extract features.
 Data structure
 --------------
 A *base waveform* is one random realisation of one class, generated clean.
-Each base waveform is then corrupted at all 5 SNR levels, producing 5 rows that
-share the same `group` id. Splits are made over `group`, never over rows, so
-all 5 SNR copies of a waveform always land in the same partition. This is what
-makes the evaluation a test of generalisation to *new disturbances* rather than
-to new noise draws.
+Each base waveform is then corrupted at all evaluation conditions, producing multiple rows that
+share the same fundamental structure (a "group"). Our dataset splitting ensures
+all evaluation-condition copies of a waveform always land in the same partition. This is what
+allows us to test whether a model actually learned to classify the disturbance,
+or just memorized the base waveforms.
 
-    total rows = 29 classes x N_BASE base waveforms x 5 SNR levels
+Usage:
+    total rows = 29 classes x N_BASE base waveforms x 6 evaluation conditions
 
 Execution model
 ---------------

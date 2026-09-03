@@ -63,12 +63,12 @@ This comparison evaluates the effect of the two-stage frozen representation stra
 
 | Condition | Classical Ensemble | DASNet | MGCNN-SDTransformer | Original DualPQ-D | **Frozen-DASNet DualPQ** |
 |---|---:|---:|---:|---:|---:|
-| Clean | 93.30 | 85.59 | 73.18 | 77.29 | **91.18** |
-| 40 dB | 93.34 | 85.83 | 73.65 | 77.56 | **91.69** |
-| 30 dB | 91.56 | 84.75 | 72.93 | 75.38 | **89.56** |
-| 20 dB | 82.52 | 77.62 | 70.36 | 68.32 | **82.36** |
-| 10 dB | 52.88 | 58.74 | 60.18 | 49.20 | **62.36** |
-| 0 dB  | 15.55 | 25.80 | 49.26 | 22.04 | **27.00** |
+| Clean | 87.21 | 84.79 | 81.62 | 77.44 | **91.18** |
+| 40 dB | 86.83 | 90.16 | 81.58 | 78.51 | **91.69** |
+| 30 dB | 85.74 | 87.18 | 80.79 | 77.16 | **89.56** |
+| 20 dB | 80.73 | 75.85 | 76.16 | 67.01 | **82.36** |
+| 10 dB | 62.40 | 51.70 | 55.87 | 35.68 | **62.36** |
+| 0 dB  | 25.75 | 20.70 | 22.45 | 12.79 | **27.00** |
 
 ## 9. Key Findings
 - **Frozen-DASNet DualPQ** has the highest mean Macro-F1 among evaluated methods.
@@ -91,7 +91,7 @@ pip install -r requirements.txt
 
 **2. Dataset Generation (Produces 34,800 rows):**
 ```bash
-for k in 0 1 2 3 4; do python scripts/build_dataset.py --step $k --n-base 200; done
+for k in 0 1 2 3 4 5; do python scripts/build_dataset.py --step $k --n-base 200; done
 python scripts/build_dataset.py --merge
 ```
 
