@@ -1,7 +1,7 @@
 # 29-Class Power-Quality Disturbance Classification
 
 A soft-voting ensemble over Stockwell-transform, time-domain and
-frequency-domain features, evaluated under a strict leakage-free protocol across
+frequency-domain features, evaluated under a strict waveform-grouped protocol across
 five AWGN levels plus noise-free data.
 
 Dataset generator: `pqmodel.m` — Igual, Medrano, Arcega & Mantescu,
@@ -12,7 +12,7 @@ ported to NumPy as `pqmodel.py`.
 
 ## Headline results
 
-Test macro-F1, weighted soft vote, waveform-level (leakage-free) split:
+Test macro-F1, weighted soft vote, waveform-grouped split:
 
 | | clean | 40 dB | 30 dB | 20 dB | 10 dB | 0 dB |
 |---|---|---|---|---|---|---|
@@ -122,7 +122,7 @@ ensemble:
 
 The DST layer reproduces the classical S-transform bit-exactly at its
 initialization (`tests/test_dst.py`) and is trained under the SAME
-leakage-free group split, noise realizations, and metrics as the ensemble
+waveform-grouped split, noise realizations, and metrics as the ensemble
 (`scripts/run_dasnet.py`). Requires PyTorch (Python <= 3.13 venv):
 
 ```
@@ -155,3 +155,18 @@ modifies the model:
 > Quality of Power (ICHQP)*, 2018.
 
 Original model and data: https://data.mendeley.com/datasets/6kmkk9bjdx/1
+
+### MGCNN-SDTransformer Citation
+The `src/mgcnn_sdtransformer.py` architecture is adapted from external research to serve as a baseline comparison. If you use or discuss this baseline, please appropriately cite the original MGCNN authors. Note that its evaluation in this repository uses our stricter waveform-grouped protocol.
+
+---
+
+## Model Provenance
+
+| Model | Origin | Role in Study | Our Contribution? |
+|---|---|---|---|
+| Classical Ensemble | Our implementation using established methods | Classical baseline | Implementation + benchmark integration |
+| DASNet | Existing/published architecture | Deep baseline | Reproduction + evaluation |
+| MGCNN-SDTransformer | Jiang et al. (2025) | External published baseline | Reproduction + evaluation |
+| Original DualPQ-D | Our research | Initial proposed hybrid | YES |
+| Frozen-DASNet DualPQ | Our research | Final proposed method | YES |

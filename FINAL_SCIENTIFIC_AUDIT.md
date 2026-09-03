@@ -95,7 +95,7 @@ The table below reports average Macro-F1 across all 5 seeds, stratified by SNR l
 
 **Implementation Verification:**
 Based on `mgcnn_sdtransformer_seed0.json`, the configuration matches standard assumptions: `batch=64`, `lr=0.001`, `epochs=40`. Wait, the paper reports 99% accuracy on *their* dataset.
-**Crucial Context:** Our benchmark uses a rigorous 5-seed grouped train/val/test split across 29 classes, incorporating severe noise (0–40 dB), ensuring no data leakage, and reporting Macro-F1. The original MGCNN paper evaluated under different noise conditions and different splitting strategies (likely random splitting without grouping), measuring simple accuracy.
+**Crucial Context:** Our benchmark uses a rigorous 5-seed grouped train/val/test split across 29 classes, incorporating severe noise (0–40 dB), preventing cross-variant leakage, and reporting Macro-F1. The original MGCNN paper evaluated under different noise conditions and different splitting strategies (likely random splitting without grouping), measuring simple accuracy.
 **Safe Wording:** "The MGCNN-SDTransformer architecture achieves 66.59% Macro-F1 on our benchmark. Performance differed substantially from the original publication under our stricter evaluation protocol, which features grouped data splitting and a severe 0dB noise regime." 
 *(Do NOT claim their 99% result was caused by leakage).*
 
@@ -108,7 +108,7 @@ Based on `mgcnn_sdtransformer_seed0.json`, the configuration matches standard as
 | **Differentiable Stockwell Transform (DST)** | **Established** | We adapt it as a learnable front-end, but we did not invent the DST itself. |
 | **Classical 191-feature rep.** | **Established** | Standard domain-knowledge features. |
 | **Frozen Deep-Expert Fusion** | **Novel Application** | Demonstrating that freezing the deep representation branch (DASNet) before fusing with classical features resolves extreme instability in PQ classification. |
-| **Rigorous Evaluation Protocol** | **Methodological Contribution** | A strict, zero-leakage, 5-seed, grouped split benchmark across severe noise levels (0–40 dB) for 29 classes. |
+| **Rigorous Evaluation Protocol** | **Methodological Contribution** | A strict, waveform-grouped, 5-seed split benchmark across severe noise levels (0–40 dB) for 29 classes. |
 
 **Do NOT say:** "We propose the first ever dual-branch network for PQ." 
 **Do say:** "We propose a decoupled fusion strategy that leverages a pre-trained frozen deep expert alongside robust classical features, addressing the optimization instability observed in end-to-end architectures."
@@ -143,10 +143,10 @@ Based on `mgcnn_sdtransformer_seed0.json`, the configuration matches standard as
 
 ## Part 10: Final Paper Structure
 
-1. **Abstract:** Focus on the instability of end-to-end dual-branch networks and our frozen-expert solution evaluated on a strict zero-leakage benchmark.
+1. **Abstract:** Focus on the instability of end-to-end dual-branch networks and our frozen-expert solution evaluated on a strict waveform-grouped benchmark.
 2. **Introduction:** Introduce the problem of combining classical robustness with deep representation learning. Highlight the optimization failure.
 3. **Related Work:** Deep learning in PQ, Classical methods, Fusion strategies.
-4. **Dataset and Evaluation Protocol:** Detail the 29 classes, noise levels (0-40dB), grouped zero-leakage split, and Macro-F1 metric. (This is a major methodological contribution).
+4. **Dataset and Evaluation Protocol:** Detail the 29 classes, noise levels (0-40dB), waveform-grouped split, and Macro-F1 metric. (This is a major methodological contribution).
 5. **Classical Baseline:** The 191-feature ensemble. Highlight its noise robustness.
 6. **DASNet / Learnable DST:** The deep spatial branch.
 7. **DualPQ-Net (Proposed):** The frozen-fusion architecture. Explain *why* freezing is necessary.

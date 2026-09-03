@@ -1,5 +1,8 @@
 # Comprehensive Research Context for Paper Generation
 
+> [!WARNING]
+> **Historical Document:** This document was drafted before the discovery of the Frozen-DASNet DualPQ architecture. The results listed here (e.g., Classical Ensemble at 72.02%) were superseded by direct extraction from saved predictions (yielding 71.52%) and are ultimately outperformed by the **Frozen-DASNet DualPQ** model (74.46 ± 1.08%).
+
 **Instruction for ChatGPT/LLM:** 
 You are acting as an expert academic researcher writing a top-tier IEEE/ACM conference paper on Power Quality (PQ) disturbance classification. Use the following highly detailed, statistically verified context to draft the paper. Do not use the word "SOTA" or "state-of-the-art". Frame the paper around robust methodology, extreme noise immunity, and the failure of pure deep learning architectures when subjected to rigorous statistical validation.
 
@@ -11,7 +14,7 @@ While many recent papers claim 99%+ accuracy using Deep Learning (CNNs, DASNet),
 1.  **Data Leakage:** They use "Random Splitting". Because PQ datasets synthesize multiple variations (noise levels) of the *same* underlying base waveform, Random Splitting leaks different noise variants of the exact same signal into both the train and test sets.
 2.  **Ignored Extreme Noise:** They often exclude 10dB and 0dB (extreme noise) environments from their evaluations, only testing on Clean or 40dB data.
 
-**Our Goal:** To evaluate a hybrid architecture (DualPQ-Net) against pure deep learning (DASNet) and a classical machine learning ensemble, using a mathematically rigorous, zero-leakage evaluation protocol under extreme noise (down to 0dB).
+**Our Goal:** To evaluate a hybrid architecture (DualPQ-Net) against pure deep learning (DASNet) and a classical machine learning ensemble, using a mathematically rigorous, waveform-grouped evaluation protocol under extreme noise (down to 0dB).
 
 ---
 
@@ -25,7 +28,7 @@ We evaluated three distinct paradigms:
 
 ## 3. The Rigorous Evaluation Protocol
 To ensure absolute scientific integrity, we implemented two strict protocols:
-*   **Grouped Stratified Splitting:** We grouped all noise variants of a specific base waveform together. If a waveform is in the training set, its 0dB, 10dB, and 40dB versions are *only* in the training set. Zero data leakage to the test set.
+*   **Grouped Stratified Splitting:** We grouped all noise variants of a specific base waveform together. If a waveform is in the training set, its 0dB, 10dB, and 40dB versions are *only* in the training set. This prevents cross-variant leakage to the test set.
 *   **5-Seed Statistical Validation:** Deep learning models are highly sensitive to random weight initialization. We trained every single architecture 5 completely independent times (using seeds 0, 1, 2, 3, 4). The final reported scores are the mathematically sound **Mean ± Standard Deviation** across all 5 runs.
 
 ---

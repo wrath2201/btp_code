@@ -1,5 +1,8 @@
 # DualPQ-Net Final Statistical Validation Report
 
+> [!WARNING]
+> **Historical Document:** This report reflects an intermediate state of the research project before the development of the decoupled frozen-fusion strategy. The results here (e.g., Classical Baseline at 72.02%) were superseded by direct extraction from the saved predictions (yielding 71.52 ± 0.84% for Classical Ensemble) and ultimately outperformed by the **Frozen-DASNet DualPQ** model (74.46 ± 1.08%).
+
 After 30 hours of rigorous GPU and CPU compute, the **5-Seed Validation Protocol** has officially concluded. 
 
 This rigorous protocol stripped away "lucky" random seeds and mathematical flukes to reveal the true, mathematically proven performance of the three models under extreme noise.
