@@ -85,7 +85,7 @@ The repository is completely clean, statistically verified, historically preserv
 
 DASNet is a project-developed deep PQD architecture developed during this research project. However, the Differentiable Stockwell Transform (DST) is based on established Stockwell-transform mathematics; do not claim invention of the underlying mathematical transform.
 **Our work:**
-- implementation/reproduction
+- development of the network architecture
 - adaptation to our 29-class benchmark
 - evaluation under our grouped split
 - multi-seed evaluation
@@ -111,7 +111,7 @@ Fusion
 ↓
 29-class classifier
 
-Clearly state that although DASNet and the classical features originate from existing methods, the specific DualPQ-D architecture and its combination/fusion strategy are our proposed work. Also document that the original end-to-end version exhibited severe seed-to-seed instability.
+Clearly state that although DASNet uses established Stockwell-transform mathematics and the classical branch uses established handcrafted signal-processing features, the specific DualPQ-D architecture and its combination/fusion strategy are our proposed work. Also document that the original end-to-end version exhibited severe seed-to-seed instability.
 
 ### 5. Frozen-DASNet DualPQ — OUR FINAL PROPOSED METHOD
 **Status:** OUR WORK / FINAL PROPOSED METHOD.

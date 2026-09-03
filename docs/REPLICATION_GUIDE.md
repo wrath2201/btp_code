@@ -4,6 +4,14 @@
 Target: Python, using the code in this folder, with fresh runs.
 Total compute: **~50 minutes** for the core path, ~90 with all audits.
 
+> [!WARNING]
+> **Historical Baseline Investigation Document**
+> The experimental instructions, numbers, dataset sizes (e.g., 29,000 rows), and terminology (e.g., 5-SNR) in the following sections pertain to an early historical investigation of the classical baseline. 
+> - These historical numerical checkpoints are intentionally preserved for transparency.
+> - The old 5-SNR / 29,000-row setup belongs to an earlier experiment and is NOT the final methodology.
+> - The final authoritative benchmark (6 SNRs, robust multi-seed evaluation) uses the current methodology documented in `README.md` and `PUBLICATION_AUDIT.md`.
+> - Readers should use `README.md` and `PUBLICATION_AUDIT.md` for the authoritative final methodology and results.
+
 ---
 
 ## 0. Read this first — what a re-run can and cannot prove
