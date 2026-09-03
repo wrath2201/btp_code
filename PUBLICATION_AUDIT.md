@@ -46,10 +46,9 @@ The implementation in `scripts/run_frozen_dualpq.py` and `src/dualpq.py` has bee
 - **No Preprocessing Leakage:** Standard scaling for classical features is safely fitted exclusively on the training partition.
 
 ## 7. MGCNN Comparison Limitations
-MGCNN-SDTransformer achieved 66.59% Macro-F1 under our benchmark. The discrepancy between this result and the original publication’s 99% accuracy is attributed to our stricter evaluation protocol:
-- Use of severe noise conditions (10dB, 0dB).
-- Use of waveform-grouped data splitting.
-- Use of the Macro-F1 metric over basic accuracy.
+MGCNN-SDTransformer achieved 66.59% Macro-F1 under our benchmark. The original publication used a different experimental protocol, including differences in dataset setup, noise conditions, splitting strategy, and evaluation metric. Therefore, its reported accuracy is not directly comparable with our Macro-F1 under the present grouped benchmark.
+
+- **Grouped Split vs Random Split:** We rigidly force noise-variants of the same base waveform into the same split (train/val/test). Random splitting allows the network to learn the base waveform instead of the actual physical disturbance.
 
 ## 8. Novelty & Contribution Statement
 **Our specific contribution is:** "We propose a decoupled fusion strategy that combines a pretrained frozen deep representation with classical handcrafted features, addressing the severe optimization instability observed during end-to-end fusion."
@@ -82,9 +81,9 @@ The repository is completely clean, statistically verified, historically preserv
 **Description:** A classical machine-learning ensemble operating on 191 handcrafted physical/signal-processing features. Components include the existing feature extraction methodology and standard ML algorithms.
 **Important:** The individual classical signal-processing features are NOT claimed as novel inventions. Our contribution is their implementation and use as the classical baseline within this benchmark.
 
-### 2. DASNet — EXISTING / BASELINE
-**Status:** EXTERNAL / EXISTING ARCHITECTURE.
-DASNet is NOT our original architecture. It is reproduced/implemented for use as a deep-learning baseline. The Learnable Discrete Stockwell Transform (DST) is also NOT claimed as our invention. Clearly cite the original source for DASNet/DST wherever appropriate.
+### 2. DASNet — PROJECT-DEVELOPED ARCHITECTURE
+
+DASNet is a project-developed deep PQD architecture developed during this research project. However, the Differentiable Stockwell Transform (DST) is based on established Stockwell-transform mathematics; do not claim invention of the underlying mathematical transform.
 **Our work:**
 - implementation/reproduction
 - adaptation to our 29-class benchmark
@@ -123,7 +122,7 @@ Pretrained DASNet → FROZEN → Deep representation
 [Deep rep + Classical MLP] → Fusion head → 29 classes
 
 **Clearly explain:**
-- DASNet itself is existing work.
+- The specific architecture is our contribution, but it uses the established DST mathematics.
 - The classical features are established/handcrafted representations.
 - Our contribution is the decoupled training/fusion strategy in which the pretrained deep representation is frozen while the classical branch and fusion head are optimized.
 - The motivation is the severe seed-to-seed instability observed in the original end-to-end DualPQ-D.
@@ -134,11 +133,11 @@ Pretrained DASNet → FROZEN → Deep representation
 
 ## 12. SUMMARY TABLE
 
-| Model | Origin | Role in Study | Our Contribution? |
-|---|---|---|---|
-| Classical Ensemble | Our implementation using established methods | Classical baseline | Implementation + benchmark integration |
-| DASNet | Existing/published architecture | Deep baseline | Reproduction + evaluation |
-| MGCNN-SDTransformer | Jiang et al. (2025) | External published baseline | Reproduction + evaluation |
+| **Component** | **Provenance** | **Role** | **Claimed Novelty?** |
+| :--- | :--- | :--- | :--- |
+| Classical Ensemble | Our implementation using established signal-processing features and standard ML algorithms | Classical baseline | Only the implementation within this benchmark |
+| DASNet | Project-developed deep PQD architecture | Deep baseline | YES (but not the underlying DST math) |
+| MGCNN-SDTransformer | External published architecture from Jiang et al. (2025) | Benchmark | NO |
 | Original DualPQ-D | Our research | Initial proposed hybrid | YES |
 | Frozen-DASNet DualPQ | Our research | Final proposed method | YES |
 
@@ -148,7 +147,7 @@ Pretrained DASNet → FROZEN → Deep representation
 
 > [!WARNING]
 > **IMPORTANT FOR PAPER AUTHORS:**
-> DASNet, DST, and MGCNN-SDTransformer must be presented as existing methods/baselines. They are not our inventions. The original DualPQ-D and Frozen-DASNet DualPQ are our proposed research contributions. Classical physical features are established representations; their integration into our proposed fusion framework is part of our work.
+> MGCNN-SDTransformer must be presented as an existing method/baseline from Jiang et al. (2025). It is not our invention. The underlying mathematics of the Stockwell Transform are established. DASNet, the original DualPQ-D, and Frozen-DASNet DualPQ are our proposed research contributions. Classical physical features are established representations; their implementation within our proposed fusion framework is part of our work.
 
 ## 14. CONTRIBUTION STATEMENT
 "Our primary methodological contribution is a decoupled hybrid PQ disturbance classification framework that combines a pretrained deep waveform representation with classical signal-processing features. The study further provides a leakage-controlled, multi-seed evaluation across 29 disturbance classes and severe noise conditions, revealing substantial differences in robustness and optimization stability among deep, classical, and hybrid approaches."
