@@ -1,5 +1,9 @@
 # Power Quality Disturbance (PQD) Project History & Decision Log
 
+> [!WARNING]
+> **Historical / Research Evolution Document**
+> This document tracks the chronological evolution of the project. It contains early claims (e.g., claiming novelty for the DST layer) that have been formally corrected in the final publication audit. DASNet and the Learnable DST are external/pre-existing baselines, not our inventions. For the final authoritative methodology and novelty claims, refer strictly to `README.md` and `PUBLICATION_AUDIT.md`.
+
 This document serves as a comprehensive log of everything that has occurred in the repository, the decisions we've made, the literature research conducted, and the experiments currently underway. This provides a complete paper trail for the eventual research publication.
 
 ---

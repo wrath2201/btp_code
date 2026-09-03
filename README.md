@@ -1,172 +1,127 @@
-# 29-Class Power-Quality Disturbance Classification
+# Frozen-DASNet DualPQ
+### Decoupled Hybrid Power Quality Disturbance Classification Under Severe Noise
 
-A soft-voting ensemble over Stockwell-transform, time-domain and
-frequency-domain features, evaluated under a strict waveform-grouped protocol across
-five AWGN levels plus noise-free data.
+This repository contains the code and evaluation framework for classifying 29 distinct Power Quality (PQ) disturbances under extreme noise conditions. The benchmark evaluates deep, classical, and hybrid architectures using a rigorous waveform-grouped protocol across five independent training seeds.
 
-Dataset generator: `pqmodel.m` — Igual, Medrano, Arcega & Mantescu,
-*Integral mathematical model of power quality disturbances* (2017),
-ported to NumPy as `pqmodel.py`.
+## Where to Start
 
----
+- For a quick plain-English overview: [START_HERE.md](docs/START_HERE.md)
+- For the final scientific validation audit: [PUBLICATION_AUDIT.md](PUBLICATION_AUDIT.md)
+- For model provenance: **Model Provenance & Our Contributions** (below)
+- For replication instructions: [REPLICATION_GUIDE.md](docs/REPLICATION_GUIDE.md)
+- For historical investigation of the classical baseline: [REPORT.md](docs/REPORT.md)
 
-## Headline results
+## Research Question
+Can we improve the robustness of Power Quality Disturbance classification under severe noise (e.g., 10 dB and 0 dB) by fusing deep learned representations with classical signal-processing features? Furthermore, does decoupling the optimization of the deep and classical branches prevent training instability?
 
-Test macro-F1, weighted soft vote, waveform-grouped split:
+## Final Method
+Frozen-DASNet DualPQ is our proposed fusion strategy. It combines a pretrained, frozen DASNet representation with a trainable physical-feature branch and classification head. The study evaluates whether decoupling the pretrained deep representation from end-to-end joint optimization improves robustness and stability under the grouped noise-aware benchmark.
 
-| | clean | 40 dB | 30 dB | 20 dB | 10 dB | 0 dB |
-|---|---|---|---|---|---|---|
-| all 29 classes | 0.886 | 0.877 | 0.869 | 0.807 | 0.628 | 0.259 |
-| 21 classes (excl. degenerate pairs) | **0.990** | 0.983 | 0.961 | 0.922 | 0.709 | 0.335 |
+## Architecture
 
-Two findings drive the interpretation:
+```text
+1024-point waveform
+        ↓
+Pretrained DASNet
+        ↓
+Frozen deep representation
+        ↓
+                    ┌───────────────┐
+191 physical       │               │
+features ───────→ Trainable MLP    │
+                    │               │
+                    └───────┬───────┘
+                            ↓
+                 Feature Fusion
+                            ↓
+                  Classification Head
+```
 
-**1. The S-transform is blind to flicker at the fundamental.** Its window at
-frequency *f* has σ_t = 1/*f*, hence σ_f = *f*/2π ≈ 8 Hz at 50 Hz — so the
-fundamental row low-passes away the 8–25 Hz flicker band before any detector
-sees it. Reading flicker off that row, the standard construction, measures
-something the transform already destroyed. Fixed by detecting the sag/swell
-event on the (flicker-free) S-envelope and measuring flicker coherently on the
-full-bandwidth Hilbert envelope outside it.
+## Model Provenance & Our Contributions
 
-**2. Four class pairs are near-degenerate by construction.** In classes
-20/21/28/29 the flicker factor multiplies *only* the sag-gated harmonic term,
-which is zero outside the event — so outside the sag, classes 15 and 20 are
-identical signals. Measured evidence: ‖δ‖ = 0.013 vs 0.037 for the pairs that
-work, i.e. ~8× less signal power. After the flicker fix, these four pairs are
-the *only* remaining confusions at 40 dB.
+We do not claim ownership or novelty for the underlying DASNet/DST architecture, MGCNN-SDTransformer architecture, or established classical signal-processing features. Our methodological contribution is the specific decoupled frozen-DASNet fusion strategy and its evaluation under the controlled benchmark protocol.
 
-**3. A naive train/test split inflates the score by up to +0.127.** Each
-waveform appears once per noise level; splitting by row instead of by waveform
-lets a waveform's clean copy sit in training while its noisy twin is in test.
-Measured: 0.866 → 0.993 on clean data, with 99.9% of "unseen" test waveforms
-already seen. The published figure for this generator is 99.41%.
+| Component | Provenance | Role |
+|---|---|---|
+| **Classical Ensemble** | Our implementation of established methods | Classical baseline |
+| **DASNet** | External/existing architecture | Deep baseline / pretrained representation |
+| **MGCNN-SDTransformer** | External published method (Jiang et al., 2025) | Benchmark |
+| **Original DualPQ-D** | Our proposed initial architecture | Initial hybrid experiment |
+| **Frozen-DASNet DualPQ** | Our final proposed method | Main contribution |
 
-Both ensemble claims are significant over 5 paired splits: weighted voting beats
-the best single model (+0.0089, 5/5 wins, p = 0.004) while **equal-weight voting
-is significantly worse** (−0.0084, 0/5, p = 0.016).
+> [!WARNING]
+> **IMPORTANT FOR PAPER AUTHORS:**
+> DASNet, DST, and MGCNN-SDTransformer must be presented as existing methods/baselines. They are not our inventions. The original DualPQ-D and Frozen-DASNet DualPQ are our proposed research contributions. Classical physical features are established representations; their integration into our proposed fusion framework is part of our work.
 
----
+## Final Results
 
-## Quick start
+Results are reported as the mean ± sample standard deviation (ddof=1) of the Macro-F1 score across five independent seeds.
 
+| Model | Macro-F1 |
+|---|---:|
+| **Frozen-DASNet DualPQ** | **74.46% ± 1.08%** |
+| Classical Ensemble | 71.52% ± 0.84% |
+| DASNet | 69.72% ± 9.11% |
+| MGCNN-SDTransformer | 66.59% ± 0.98% |
+| Original DualPQ-D | 61.63% ± 15.58% |
+
+## SNR Robustness
+
+The table below details the performance of the final proposed method (Frozen-DASNet DualPQ) as noise increases. While highly robust down to 20 dB, extreme noise at 0 dB remains a fundamentally difficult problem.
+
+| SNR | Frozen-DASNet DualPQ |
+|---|---:|
+| Clean | 91.18% |
+| 40 dB | 91.69% |
+| 30 dB | 89.56% |
+| 20 dB | 82.36% |
+| 10 dB | 62.36% |
+| 0 dB | 27.00% |
+
+## Research Evolution
+
+Our methodology evolved sequentially through rigorous testing:
+1. **Classical Baseline**: Found to be robust, but fundamentally limited on certain indistinguishable classes.
+2. **DASNet Baseline**: Implemented an existing deep architecture, but found it severely degraded under extreme noise (10 dB, 0 dB).
+3. **Original DualPQ-D**: Combined deep and classical features end-to-end, but observed severe seed-to-seed instability (±15.58%).
+4. **Frozen-DASNet DualPQ**: Decoupled the optimization by freezing the deep branch, resulting in stable, superior performance. The observed seed instability in the original architecture is consistent with difficult joint optimization dynamics.
+
+## Evaluation Protocol
+
+Our rigorously controlled evaluation protocol includes:
+- **29 Classes**: Synthetic dataset generated using the mathematical model by Igual et al.
+- **Waveform Length**: 1024 points (downsampled from generated 1280 to standard dimensions).
+- **Grouped Stratified Split**: Waveform-grouped train/validation/test splitting prevents cross-variant leakage between partitions. Noise variants of the same base waveform are kept in the same split.
+- **Severe Noise Conditions**: Clean, 40 dB, 30 dB, 20 dB, 10 dB, and 0 dB evaluated.
+- **Five Independent Seeds**: All deep/hybrid models trained across seeds 0, 1, 2, 3, and 4 to accurately measure variance.
+
+## Limitations
+
+- The dataset is simulated/synthetic rather than a large real-world measurement corpus.
+- Performance decreases substantially at 0 dB, remaining an unsolved difficulty.
+- Five seeds provide useful stability evidence but are still a relatively small sample.
+- The MGCNN benchmark uses a different original experimental protocol from its published paper, so direct numerical comparison with published accuracy is not apples-to-apples.
+- The final method demonstrates improved stability/performance under this benchmark, but broader generalization requires external real-world datasets.
+
+## Reproducibility & Installation
+
+The project uses two separate environments to avoid dependency conflicts.
+For classical baselines and dataset generation:
 ```bash
 pip install -r requirements.txt
-
-# build the dataset (~10 min; steps 0-4 are noisy levels, 5 is noise-free)
-python scripts/build_dataset.py --step 0 --n-base 200 --shard-dir data/shards
-python scripts/build_dataset.py --step 1 --n-base 200 --shard-dir data/shards
-python scripts/build_dataset.py --step 2 --n-base 200 --shard-dir data/shards
-python scripts/build_dataset.py --step 3 --n-base 200 --shard-dir data/shards
-python scripts/build_dataset.py --step 4 --n-base 200 --shard-dir data/shards
-python scripts/build_dataset.py --merge --steps 0 1 2 3 4 --shard-dir data/shards --out data/dataset.npz
-
-# train and evaluate (~25 min)
-python scripts/run_pipeline.py --data data/dataset.npz --out results/results/results.json --folds 10
-
-# checks, figures, audits
-python scripts/verify.py --data data/dataset.npz          # 19 correctness controls
-python scripts/make_figures.py
-python experiments/audit_leakage.py --data data/dataset.npz   # the leakage measurement
-python experiments/multiseed.py --mode split --seeds 0 1 2 3 4
+```
+For deep-learning models (DASNet, MGCNN, DualPQ):
+```bash
+pip install -r requirements-deep.txt
 ```
 
-`--steps 0 1 2 3 4` on the merge is not optional: without it the merge sweeps up
-every shard present, including the noise-free one, and you silently train on six
-levels while believing you used five.
+See [REPLICATION_GUIDE.md](docs/REPLICATION_GUIDE.md) for full commands.
 
-Low on RAM? Add `--max-new-folds 1` to `pipeline.py` and run it ten times; it
-checkpoints after every fold.
+## License / Citation
 
----
+This repository is distributed under the GPL-3.0 License due to the underlying `pqmodel.py` generator ported from MATLAB. 
 
-## Documentation
+If you use or modify the dataset model, please cite:
+> R. Igual, C. Medrano, F. J. Arcega, G. Mantescu, "Integral mathematical model of power quality disturbances", 18th International Conference on Harmonics and Quality of Power (ICHQP), 2018.
 
-| File | For |
-|---|---|
-| `START_HERE.md` | Plain-English walkthrough, no programming assumed |
-| `REPORT.md` | Full results, both findings, prioritised recommendations |
-| `REPLICATION_GUIDE.md` | Independent replication with expected values and tolerances |
-| `Colab_Run.ipynb` | Run the whole pipeline on Google Colab |
-
-## Code map
-
-| File | Role |
-|---|---|
-| `pqmodel.py` | NumPy port of the 29-class generator + AWGN |
-| `features.py` | S-transform and 191 features across 8 groups |
-| `build_dataset.py` | Resumable dataset build (`--step 0..5`, `--merge`) |
-| `pipeline.py` | Splits, 4 base models, 4 ensembles, evaluation |
-| `verify.py` | 19 correctness controls incl. label-shuffle |
-| `audit_leakage.py` | Group-split vs row-split inflation |
-| `multiseed.py` | Confidence intervals and paired significance tests |
-| `unseen_snr.py` | Leave-one-SNR-out robustness |
-| `make_figures.py` | The four result figures |
-| `test_pqmodel.py`, `test_features.py` | Validation against analytic ground truth |
-| `exp_flicker*.py`, `exp_degeneracy.py` | The investigation behind findings 1 and 2 |
-
-Generated data is not committed — `build_dataset.py` reproduces it
-deterministically from a fixed seed in about ten minutes.
-
-## DASNet (deep-learning track)
-
-`DASNet` (Differentiable Adaptive Stockwell Network) is an end-to-end model
-whose three components each target a documented failure mode of the feature
-ensemble:
-
-| Component | File | Motivated by |
-|---|---|---|
-| Learnable Stockwell window law `sigma_t(f) = c/f^p * exp(delta_f)` | `src/dst.py` | Finding 1: fixed `1/f` window is blind to flicker at 50 Hz |
-| SNR-conditioned CNN (FiLM on measured `snr_est_db`) | `src/dasnet.py` | 0.21 F1 unseen-SNR extrapolation gap (`unseen_snr.json`) |
-| Optional evidential Dirichlet head | `src/dasnet.py` | Finding 2: four near-degenerate class pairs with AUC ceilings |
-
-The DST layer reproduces the classical S-transform bit-exactly at its
-initialization (`tests/test_dst.py`) and is trained under the SAME
-waveform-grouped split, noise realizations, and metrics as the ensemble
-(`scripts/run_dasnet.py`). Requires PyTorch (Python <= 3.13 venv):
-
-```
-python scripts/build_waveforms.py          # raw waveforms, identical noise draws
-python scripts/run_dasnet.py --pilot       # smoke test
-python scripts/run_dasnet.py --epochs 40   # full run -> results/dasnet_results.json
-```
-
-Ablations: `--no-learnable-dst` (frozen 1/f law), `--no-film`,
-`--head evidential`, `--no-aug`.
-
----
-
-## Licence and citation
-
-⚠ **`pqmodel.py` is a port of `pqmodel.m`, which is licensed GPL-3.0.** It is
-therefore a derivative work, and the modules that import it are affected.
-
-GPL obligations attach on *distribution*, so a private repository triggers
-nothing. **But if you make this repository public, publish the code, or share it
-outside your institution, the project must be released under GPL-3.0** and
-include the original copyright notice. Decide this before flipping the
-repository to public.
-
-The original authors also ask that the paper be cited by anyone who uses or
-modifies the model:
-
-> R. Igual, C. Medrano, F. J. Arcega, G. Mantescu, "Integral mathematical model
-> of power quality disturbances", *18th International Conference on Harmonics and
-> Quality of Power (ICHQP)*, 2018.
-
-Original model and data: https://data.mendeley.com/datasets/6kmkk9bjdx/1
-
-### MGCNN-SDTransformer Citation
-The `src/mgcnn_sdtransformer.py` architecture is adapted from external research to serve as a baseline comparison. If you use or discuss this baseline, please appropriately cite the original MGCNN authors. Note that its evaluation in this repository uses our stricter waveform-grouped protocol.
-
----
-
-## Model Provenance
-
-| Model | Origin | Role in Study | Our Contribution? |
-|---|---|---|---|
-| Classical Ensemble | Our implementation using established methods | Classical baseline | Implementation + benchmark integration |
-| DASNet | Existing/published architecture | Deep baseline | Reproduction + evaluation |
-| MGCNN-SDTransformer | Jiang et al. (2025) | External published baseline | Reproduction + evaluation |
-| Original DualPQ-D | Our research | Initial proposed hybrid | YES |
-| Frozen-DASNet DualPQ | Our research | Final proposed method | YES |
+If you discuss the MGCNN-SDTransformer baseline, please cite the original Jiang et al. (2025) authors appropriately.

@@ -1,0 +1,4 @@
+# Deep-learning dependencies for Frozen-DASNet DualPQ, DASNet, and MGCNN baselines
+# (Needs Python <= 3.13 for wheels)
+# Note: Install this AFTER installing requirements.txt
+torch>=2.4 --index-url https://download.pytorch.org/whl/cu126

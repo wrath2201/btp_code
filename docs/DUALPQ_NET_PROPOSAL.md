@@ -1,4 +1,9 @@
-# From DASNet to DualPQ-Net
+# DUALPQ-NET: Project Proposal
+
+> [!WARNING]
+> **Historical / Proposal Document**
+> This document is the original project proposal and contains early hypotheses and claims (e.g., claiming novelty for DASNet/DST) that have since been revised. DASNet and DST are recognized as external/pre-existing baselines. The final authoritative methodology and novelty claims are documented in `README.md` and `PUBLICATION_AUDIT.md`.
+
 **Formal Proposal for Conference Paper Architecture**
 
 This document outlines the transition from the initial Deep Learning attempt (DASNet) to the proposed hybrid architecture (DualPQ-Net) based on extensive literature research and experimental failure analysis.

@@ -1,204 +1,65 @@
 # Start here — the plain-English version
 
-No programming knowledge assumed. This explains what the thing does, what each
-file is for, and exactly which keys to press to run it.
-
-If you only read one section, read **Part 5**. That's the actual instructions.
+No programming knowledge assumed. This file explains what the project is, the final proposed method, the baselines, and exactly how the data and metrics work.
 
 ---
 
 ## Part 1 — What this project actually is
 
-Imagine you're training a junior engineer to diagnose faults on a power line.
+Imagine you're training a system to diagnose faults on a power line. You build a machine that produces synthetic power-line recordings with faults deliberately inserted — voltage dips, spikes, harmonics, flicker — 29 different fault types in total. 
 
-You can't wait around for real faults, so you **fake them**. You build a machine
-that produces power-line recordings with faults you deliberately put in —
-voltage dips, spikes, harmonics, flicker — 29 different fault types in total.
-Because you created them, you know the right answer for every single one.
-
-Then you do four things:
-
-1. **Make it realistic.** Real measurements have static in them, so you add
-   static at five levels — from barely any, to so much static that the noise is
-   as strong as the signal itself.
-
-2. **Take measurements.** You can't hand a wiggly line to a computer and expect
-   an answer. So for each recording you measure 191 specific quantities: how far
-   the voltage dipped, how long it stayed down, how much 150 Hz content there
-   was, whether there was a fast burst, and so on. Each recording becomes a row
-   of 191 numbers.
-
-3. **Teach, then examine.** You hide 15% of the recordings in a locked drawer.
-   You let the computer study the other 85%, learning which patterns of numbers
-   go with which fault. Then you give it the locked-drawer recordings — ones it
-   has never seen — and see how many it gets right.
-
-4. **Check you didn't cheat.** This is the part most people skip, and it's the
-   part that decides whether your number means anything. More on this in Part 6.
-
-The final score is **0.69 out of 1.0** across all 29 fault types — or **0.98**
-if you set aside four fault types that are essentially impossible to tell apart
-(explained in Part 7).
+We do four things:
+1. **Add Extreme Noise.** Real measurements have static. We add noise at five levels — from 40 dB (clean) down to 0 dB, where the static is as loud as the underlying signal.
+2. **Prevent Cheating (Grouped Splitting).** We group all noise variants of the same base waveform together. If the clean version of a signal is in the training set, all of its noisy versions are also in the training set. This prevents cross-variant leakage where the model just memorizes a specific waveform.
+3. **Train on Five Independent Seeds.** We run the entire training process five separate times from scratch to ensure the results aren't just a lucky fluke.
+4. **Evaluate using Macro-F1.** The final score is the Macro-F1 metric, which ensures that performing poorly on rare classes heavily penalizes the overall score.
 
 ---
 
-## Part 2 — Words you'll see, in plain English
+## Part 2 — The Final Research Story
 
-| Word | What it means here |
-|---|---|
-| **signal** / **waveform** | One recording of a power line — 0.2 seconds long. A wiggly line. |
-| **class** / **label** | Which of the 29 faults it is. "Class 2" = a voltage dip (sag). |
-| **SNR**, measured in **dB** | How much static. **40 dB = very clean. 0 dB = the static is as loud as the signal.** Lower number = harder. |
-| **feature** | One measured quantity. "How far did the voltage dip" is one feature. We use 191. |
-| **training set** | The recordings the computer is allowed to study. |
-| **test set** | The locked drawer. Used once, at the very end, to get an honest score. |
-| **model** / **learner** | A method that learns the pattern. We use four different ones, because they make different mistakes. |
-| **ensemble** / **voting** | Letting all four vote on each answer, hoping the majority is right more often than any one alone. |
-| **macro-F1** | The score, from 0 to 1. It's an average of how well we do on *each* fault type, so getting one rare fault badly wrong hurts as much as a common one. Higher is better. Random guessing = 0.034. |
-| **leakage** | Accidentally letting the computer see test answers during study. Makes your score look great and mean nothing. |
-| **fold** / **cross-validation** | Splitting the study material 10 ways and rotating which part you hold back, so results don't depend on one lucky split. |
+Our research evolved through several stages:
+
+### 1. The Baselines
+- **Classical Ensemble:** We built a baseline that measures 191 specific handcrafted quantities (like how far the voltage dipped) and feeds them into standard machine learning models.
+- **DASNet (Deep Baseline):** We evaluated an existing deep-learning architecture that learns features directly from the raw waveform using a Learnable Discrete Stockwell Transform.
+- **MGCNN-SDTransformer:** An external published baseline (Jiang et al., 2025) that we reimplemented and evaluated under our rigorous benchmark.
+
+### 2. The Initial DualPQ-D Architecture
+We proposed a hybrid architecture (Original DualPQ-D) that combined the deep DASNet representation with our 191 classical features and trained them together end-to-end. However, we discovered severe seed-to-seed instability — sometimes it performed incredibly well, and sometimes it collapsed completely.
+
+### 3. The Final Proposed Method: Frozen-DASNet DualPQ
+To solve the instability, we proposed a **decoupled fusion strategy**. We take a pretrained DASNet model and completely **FREEZE** it. We then combine this frozen deep representation with the classical feature branch and train only the classical branch and the final fusion layer. 
+
+**This final method achieved 74.46% ± 1.08% Macro-F1 across five seeds**, vastly outperforming the baselines and resolving the optimization instability.
+
+---
+
+## Part 3 — Where are the numbers?
+
+The authoritative results are directly extracted from saved prediction artifacts (the `*_preds.npz` files in the `results/` folder).
+
+| Model | Macro-F1 (Mean ± Sample SD) |
+|---|---:|
+| **Frozen-DASNet DualPQ** | **74.46% ± 1.08%** |
+| Classical Ensemble | 71.52% ± 0.84% |
+| DASNet | 69.72% ± 9.11% |
+| MGCNN-SDTransformer | 66.59% ± 0.98% |
+| Original DualPQ-D | 61.63% ± 15.58% |
 
 ---
 
-## Part 3 — What's in the folder
+## Part 4 — Which files should I read?
 
-### Files you will actually type the name of (5 of them)
-
-| File | What it does when you run it | Takes |
-|---|---|---|
-| `build_dataset.py` | Makes the 29,000 fake recordings and measures all 191 things | ~8 min |
-| `pipeline.py` | Splits the data, teaches the four learners, gives the final score | ~25 min |
-| `verify.py` | Runs 19 safety checks to prove we didn't cheat | ~1 min |
-| `make_figures.py` | Draws the four result pictures | ~10 sec |
-| `audit_leakage.py` | Shows how much your score inflates if you split the data wrongly | ~3 min |
-
-### Files that do work behind the scenes — never run these directly
-
-| File | What it is |
-|---|---|
-| `pqmodel.py` | The signal factory. This is your `pqmodel.m` translated from MATLAB into Python. |
-| `features.py` | The measuring instruments — all 191 measurements live here. |
-
-`build_dataset.py` reaches into these two automatically. You never touch them.
-
-### Results that appear after you run things
-
-| File | What it is |
-|---|---|
-| `results/results.json` | Every number, saved. Machine-readable. |
-| `fig1_snr_degradation.png` | How the score falls as static increases |
-| `fig2_class_snr_heatmap.png` | **The most useful picture.** Score for each of the 29 faults at each static level. Green = good. |
-| `fig3_confusion.png` | What gets mistaken for what |
-| `fig4_feature_importance.png` | Which of the 191 measurements mattered most |
-
-### Reading material
-
-| File | What it is |
-|---|---|
-| `REPORT.md` | The full write-up: results, the two discoveries, and recommendations |
-| `REPLICATION_GUIDE.md` | Technical version of Part 5 below, with all expected numbers |
-| `START_HERE.md` | This file |
-
-### The supporting files — evidence, not leftovers
-
-You won't run these every time, but each exists to answer a specific question
-somebody will eventually ask you about this work. Two of them are arguably the
-most important files in the folder.
-
-#### The proof files — run these before you trust any number
-
-| File | Question it answers | Time |
-|---|---|---|
-| `test_pqmodel.py` | Is the signal factory producing correct waveforms? | ~20 sec |
-| `test_features.py` | Do the 191 measurements measure what they claim? | ~30 sec |
-
-```
-python tests/test_pqmodel.py
-python tests/test_features.py
-```
-
-**These two are different in kind from everything else here.** They check against
-answers that are true by mathematics and physics, not against my results.
-
-For example: a pure 50 Hz sine wave of amplitude 1.0 *must* appear in the
-Stockwell transform as exactly 0.5, at bin 10, unchanging over time. That's
-provable on paper before you write a line of code. `test_features.py` checks it,
-and also checks that a 50% voltage dip reads as 0.50, that the harmonics come out
-between 0.05 and 0.15 as the model specifies, and that the added noise really
-lands at the SNR it was asked for.
-
-Why that matters: every other file in this project can only tell you the code is
-*self-consistent*. If the signal factory had a bug, the whole pipeline would run
-happily and produce confident, wrong numbers. These two would fail — no matter
-whose computer ran them. They're your only independent check that the foundations
-are sound.
-
-#### The investigation files — the evidence behind the two discoveries
-
-| File | What it establishes | Time |
-|---|---|---|
-| `exp_flicker.py` … `exp_flicker4.py` | Four rounds of detective work that found *why* the flicker faults were being confused | 2–5 min each |
-| `exp_degeneracy.py` | Measures how much distinguishing evidence each fault pair actually contains | ~1 min |
-
-`REPORT.md` makes two strong claims: that the Stockwell transform is blind to
-flicker at the fundamental frequency, and that four fault pairs are
-near-identical by construction. **When your examiner asks "how do you know
-that?", these files are the answer.** Without them both claims are just
-assertions.
-
-Two are worth running to see the evidence directly:
-
-```
-python experiments/exp_flicker2.py      (~3 min)
-python experiments/exp_degeneracy.py    (~1 min)
-```
-
-In `exp_flicker2.py`, look at the row labelled `pure / pure flicker (control)`.
-The full-bandwidth measurements (`Hilbert`, `square-law`, `qcycle-RMS`) score
-**1.000** — perfect separation — while the Stockwell measurement scores about
-0.5, which is coin-flipping. Same detector, same signals; the only difference is
-which measurement it reads. That one row is what proved the Stockwell transform
-was destroying the flicker, rather than the detector being weak.
-
-`exp_degeneracy.py` prints the size of the actual signal difference for each
-fault pair. The four problem pairs come out at **0.013**, against **0.037** for
-the pairs that work — roughly a third the size, which is about **eight times
-less signal power** to work with (9 dB weaker). That is the whole argument of
-Part 7 in a single line of output.
-
-One more reason to keep them: `exp_flicker.py` and `exp_flicker2.py` both
-**failed** — every detector scored at chance. That failure is what located the
-real cause. A record of what didn't work, and why, is worth as much in a project
-report as the thing that finally did.
-
-#### The extra experiments — how much to trust the numbers
-
-| File | Question it answers | Time |
-|---|---|---|
-| `multiseed.py` | How much would my score change if the data had been split differently? | ~5 min |
-| `unseen_snr.py` | What happens at a noise level the system was never trained on? | ~5 min |
-
-```
-python experiments/multiseed.py --mode split --seeds 0 1 2 3 4
-```
-
-`multiseed.py` re-runs everything with five different random splits. The answer:
-scores wobble by about **±0.005**. That's your margin of error, and it means any
-difference smaller than about 0.01 is noise, not a finding — useful discipline
-before you claim one method beat another.
-
-```
-python experiments/unseen_snr.py --only 0     (then --only 1, 2, 3, 4)
-python experiments/unseen_snr.py --merge
-```
-
-`unseen_snr.py` trains on four noise levels and tests on the fifth, which it has
-never seen. Result: the system copes fine with *less* noise than it trained on,
-but collapses completely on *more*. Held out, the 0 dB level scores 0.051 — barely
-above the 0.034 you'd get by guessing. Worth knowing before anyone asks how it
-would behave on a noise level you didn't anticipate.
+- **`README.md`**: The main page describing the final project architecture and results.
+- **`PUBLICATION_AUDIT.md`**: The rigorous scientific audit validating all reported numbers.
+- **`REPLICATION_GUIDE.md`**: Instructions on how to reproduce the results.
 
 ---
+
+> [!WARNING]
+> **Historical / Investigation Instructions Below**
+> The remaining sections below contain the original setup and execution instructions for the Classical Ensemble baseline investigation. While this provides valuable historical context (such as how the dataset is built and why the classical baseline struggles with flicker), it does not describe the execution of the final Frozen-DASNet architecture. For current execution, see the `README.md`.
 
 ## Part 4 — One-time setup
 

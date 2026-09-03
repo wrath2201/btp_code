@@ -1,7 +1,11 @@
 # 29-Class Power-Quality Disturbance Classification
 ## Multi-SNR ensemble over Stockwell + time + frequency features
 
-Dataset generator: `pqmodel.m` — Igual, Medrano, Arcega & Mantescu, *Integral
+> [!WARNING]
+> **Historical / Investigative Report**
+> This report documents the early stages of the project, focusing exclusively on the Classical Ensemble baseline and its behavior (e.g., discovering the S-transform's flicker blindness). 
+> It is **NOT** the final proposed-method report and does not cover the final Frozen-DASNet DualPQ architecture. 
+> For current authoritative results, methodology, and model provenance, see `README.md` and `PUBLICATION_AUDIT.md`.
 mathematical model of power quality disturbances* (2017), ported to NumPy.
 
 ---
