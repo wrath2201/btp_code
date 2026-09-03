@@ -29,7 +29,7 @@ Our research evolved through several stages:
 We proposed a hybrid architecture (Original DualPQ-D) that combined the deep DASNet representation with our 191 classical features and trained them together end-to-end. However, we discovered severe seed-to-seed instability — sometimes it performed incredibly well, and sometimes it collapsed completely.
 
 ### 3. The Final Proposed Method: Frozen-DASNet DualPQ
-To solve the instability, we proposed a **decoupled fusion strategy**. We take a pretrained DASNet model and completely **FREEZE** it. We then combine this frozen deep representation with the classical feature branch and train only the classical branch and the final fusion layer. 
+To solve the instability, we proposed a **decoupled fusion strategy**. We take a stage-1-trained DASNet model and completely **FREEZE** it. We then combine this frozen deep representation with the classical feature branch and train only the classical branch and the final fusion layer. 
 
 **This final method achieved 74.46% ± 1.08% Macro-F1 across five seeds**, vastly outperforming the baselines and resolving the optimization instability.
 
@@ -141,7 +141,7 @@ five at once uses too much memory on a normal laptop and crashes.
 
 **You'll know it worked** when the last line prints:
 ```
-merged -> data\dataset.npz   X=(29000, 191)  groups=5800  classes=29
+merged -> data\dataset.npz   X=(34800, 191)  groups=5800  classes=29
 ```
 29,000 recordings, 191 measurements each. That's the spreadsheet.
 

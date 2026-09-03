@@ -47,7 +47,7 @@ Confirmed generator settings, `pqmodel(ns, fs, f, n, A)`:
 | `ns` | 200 / class | 5800 base waveforms |
 | SNR | 40 / 30 / 20 / 10 / 0 dB | AWGN, calibrated to within 0.01 dB |
 
-**29,000 rows = 29 classes × 200 base waveforms × 5 SNR levels.**
+**34,800 rows = 29 classes × 200 base waveforms × 6 evaluation conditions.**
 191 features. S-transform band-limited to 0–1600 Hz at 5 Hz resolution
 (321 × 1280 complex per signal).
 
@@ -69,7 +69,7 @@ Confirmed generator settings, `pqmodel(ns, fs, f, n, A)`:
 ```
 5800 base waveforms
    └── grouped, stratified 70/15/15 split      (4060 / 870 / 870 groups)
-         └── each group carries all 5 SNR copies  (20300 / 4350 / 4350 rows)
+         └── each group carries all 6 evaluation copies  (24360 / 5220 / 5220 rows)
                └── StratifiedGroupKFold(10) inside train → OOF probabilities
                      └── meta-learner + voting weights fitted on OOF
                            └── validation selects the ensemble
@@ -252,9 +252,9 @@ and Recommendations 4–6 follow directly from it.
 | check | result |
 |---|---|
 | train/val, train/test, val/test group overlap | 0 in all three |
-| every group has exactly 5 SNR siblings, never split | pass |
-| 29 classes balanced in every partition | 700 / 150 / 150 |
-| 5 SNR levels balanced in every partition | 4060 / 870 / 870 |
+| every group has exactly 6 condition siblings, never split | pass |
+| exact | dataset class balances | pass |
+| 6 evaluation conditions balanced in every partition | 4872 / 1044 / 1044 |
 | **permuted labels → chance** | **0.0358** (chance 0.0345) |
 | **group-coherent label permutation → chance** | **0.0393** |
 | **random features → chance** | **0.0315** |

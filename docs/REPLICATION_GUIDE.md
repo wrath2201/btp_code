@@ -109,7 +109,7 @@ True`.
 
 ## 3. Stage 2 — build the dataset (~8 min)
 
-29 classes × 200 base waveforms × 5 SNR levels = 29,000 rows.
+29 classes × 200 base waveforms × 6 evaluation conditions = 34,800 rows.
 
 ```bash
 for k in 0 1 2 3 4; do python scripts/build_dataset.py --step $k --n-base 200; done
@@ -122,7 +122,7 @@ must read within 0.01 dB of target:
 ```
 SNR 40 dB (achieved 40.00 dB): (5800, 191) in 1.5 min -> /tmp/shards/shard_0.npz
 ...
-merged -> /tmp/dataset.npz   X=(29000, 191)  groups=5800  classes=29  SNRs=[0, 10, 20, 30, 40]
+merged -> /tmp/dataset.npz   X=(34800, 191)  groups=5800  classes=29  SNRs=[0, 10, 20, 30, 40, 999]
 ```
 
 *Why split into steps:* the whole build in one process gets OOM-killed on a
@@ -432,7 +432,7 @@ waveform-level split, with no denoising.
 | 1 | S-transform of pure sinusoid | 0.5000 | ±0.02 |
 | 1 | achieved SNR, all levels | target | ±0.5 dB |
 | 1 | feature count | 191 | exact |
-| 2 | dataset shape | (29000, 191), 5800 groups | exact |
+| 2 | dataset shape | (34800, 191), 5800 groups | exact |
 | 3 | split rows | 20300 / 4350 / 4350 | exact |
 | 3 | class balance | 700 / 150 / 150 | exact |
 | 3 | CV lgbm | 0.6581 ± 0.0109 | ±0.01 |

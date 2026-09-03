@@ -87,7 +87,7 @@ The table below reports average Macro-F1 across all 5 seeds, stratified by SNR l
 - Seed 3 collapsed to 34%, pulling the overall mean down significantly.
 - Freezing the DASNet branch entirely resolved this, yielding a standard deviation of 1.08%.
 **Supported Interpretation:** End-to-end joint training of a deep spatial feature extractor (DASNet) alongside classical feature inputs suffers from extreme seed-to-seed instability and optimization collapse. Freezing the deep branch decouples the learning dynamics and completely eliminates this instability.
-**Hypothesis (Do not claim as fact):** Gradient conflict between the deep spatial pathway and the fully connected classical pathway during joint optimization causes the network to collapse into a suboptimal local minimum.
+**Hypothesis (Do not claim as fact):** The frozen two-stage training strategy substantially reduced run-to-run variability relative to the original jointly trained DualPQ configuration. The result is consistent with improved optimization stability.
 
 ---
 
@@ -162,6 +162,6 @@ Based on `mgcnn_sdtransformer_seed0.json`, the configuration matches standard as
 1. **Is this strong enough for a conference paper?** Yes. The combination of a highly rigorous benchmark (which exposes flaws in existing models like MGCNN) and a practical, well-analyzed architectural solution (frozen fusion) is a solid contribution for an applied ML/Power Systems venue.
 2. **What is the actual contribution?** Revealing the optimization instability of fusing hand-crafted features with deep networks in PQ, and providing a stable, decoupled training strategy, all validated on a rigorous new benchmark protocol.
 3. **What is weak?** The absolute performance gain over the Classical Ensemble on some individual runs can be slim. The primary win is in *average reliability and ceiling performance on high SNRs*, not a massive leap in peak accuracy at 0dB (where all models still struggle).
-4. **What claims should we NOT make?** Do not claim end-to-end training fails due to "gradient conflicts" (we have no gradient logs). Do not claim MGCNN is flawed due to "data leakage" (we just say "stricter evaluation protocol").
+Do not claim end-to-end training fails due to "gradient conflicts" (we have no gradient logs). Do not claim MGCNN is flawed due to "data leakage" (we just say "stricter evaluation protocol").
 5. **What experiments are genuinely necessary?** **None.** The statistical evidence is clear, the failure analysis is supported by variance metrics, and the baseline comparisons are complete. No new models are needed.
 6. **What can safely be considered finished?** The modeling, the evaluation protocol, the metric generation, and the baseline comparisons are 100% finished. We are ready to write.

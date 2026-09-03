@@ -52,16 +52,17 @@ class DualWaveDataset(Dataset):
         # This is scientifically fair because the CNN is penalized with harder
         # waveforms while the features remain frozen at their discrete SNR level.
         if self.augment:
-            rng = np.random.default_rng(
-                torch.utils.data.get_worker_info().seed
-                if torch.utils.data.get_worker_info() else None)
-            if rng.random() < self.p_aug:
+            if not hasattr(self, '_rng'):
+                info = torch.utils.data.get_worker_info()
+                self._rng = np.random.default_rng(info.seed if info else None)
+
+            if self._rng.random() < self.p_aug:
                 wc = self.clean_row[int(self.group[i])]
-                snr_db = rng.uniform(0.0, 40.0)
+                snr_db = self._rng.uniform(0.0, 40.0)
                 pw = float(np.mean(wc.astype(np.float64) ** 2))
                 sd = math.sqrt(pw / (10.0 ** (snr_db / 10.0)))
-                w = (wc + rng.normal(0.0, sd, wc.shape)).astype(np.float32)
-            if rng.random() < 0.5:
+                w = (wc + self._rng.normal(0.0, sd, wc.shape)).astype(np.float32)
+            if self._rng.random() < 0.5:
                 w = -w
                 
         w_tensor = torch.from_numpy(np.ascontiguousarray(w))

@@ -48,7 +48,7 @@ Variance was massively reduced, eliminating the catastrophic optimization collap
 Yes. These results are consistent with the hypothesis that end-to-end joint optimization of the Deep/DST branch contributes to the observed instability. By freezing the Deep branch, the catastrophic failures disappeared.
 
 ## 10. Recommended next experiment
-Since the representations themselves are fundamentally complementary (as evidenced by the stable high performance here), but end-to-end training destabilizes them, the next logical step is to explore the precise optimization dynamics on the original end-to-end model. We hypothesize that gradient conflicts or similar optimization issues may occur, which requires further investigation, or one could explore an alternate fusion mechanism (like Transformer cross-attention in MGCNN) that naturally regulates the gradient flow.
+Since the representations themselves are fundamentally complementary (as evidenced by the stable high performance here), but end-to-end training destabilizes them, the next logical step is to explore the precise optimization dynamics on the original end-to-end model. We hypothesize that optimization issues may occur under joint training, or one could explore an alternate fusion mechanism (like Transformer cross-attention in MGCNN).
 
 ---
 ### Did freezing the experts make DualPQ reliably reproducible?

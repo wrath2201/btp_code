@@ -148,7 +148,7 @@ def main(a):
                     f"  weighted={r['vote_weighted']:.4f}", flush=True)
     else:
         for s in a.seeds:
-            for k in range(5):
+            for k in range(6):
                 subprocess.run([sys.executable, "scripts/build_dataset.py", "--step",
                                 str(k), "--n-base", str(a.n_base), "--seed",
                                 str(20260807 + s), "--shard-dir",
@@ -161,7 +161,7 @@ def main(a):
                         d["snr"].astype(int), split_seed=0, model_seed=0,
                         n_jobs=a.n_jobs)
             rows.append(r)
-            print(f"data seed {s}: vote={r['vote']:.4f}", flush=True)
+            print(f"data seed {s}: vote={r['vote_weighted']:.4f}", flush=True)
 
     summarise(rows, a.out, a.mode)
 

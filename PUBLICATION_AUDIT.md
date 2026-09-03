@@ -51,7 +51,7 @@ MGCNN-SDTransformer achieved 66.59% Macro-F1 under our benchmark. The original p
 - **Grouped Split vs Random Split:** We rigidly force noise-variants of the same base waveform into the same split (train/val/test). Random splitting allows the network to learn the base waveform instead of the actual physical disturbance.
 
 ## 8. Novelty & Contribution Statement
-**Our specific contribution is:** "We propose a decoupled fusion strategy that combines a pretrained frozen deep representation with classical handcrafted features, addressing the severe optimization instability observed during end-to-end fusion."
+**Our specific contribution is:** "We propose a decoupled fusion strategy that combines a stage-1-trained DASNet representation with classical handcrafted features, addressing the severe optimization instability observed during end-to-end fusion."
 (We adapt, but do not claim invention of, the DST or the concept of multi-branch fusion).
 
 ## 9. Final Checklist
@@ -117,17 +117,17 @@ Clearly state that although DASNet uses established Stockwell-transform mathemat
 **Status:** OUR WORK / FINAL PROPOSED METHOD.
 This is the final model/method proposed by our research. It evolved from Original DualPQ-D after discovering severe instability during end-to-end joint training.
 **The final approach:**
-Pretrained DASNet → FROZEN → Deep representation
+Stage-1-trained DASNet → FROZEN → Deep representation
 191 physical features → Classical MLP
 [Deep rep + Classical MLP] → Fusion head → 29 classes
 
 **Clearly explain:**
 - The specific architecture is our contribution, but it uses the established DST mathematics.
 - The classical features are established/handcrafted representations.
-- Our contribution is the decoupled training/fusion strategy in which the pretrained deep representation is frozen while the classical branch and fusion head are optimized.
+- Our contribution is the decoupled training/fusion strategy in which the DASNet checkpoint trained in stage 1 is frozen during stage 2 while the classical branch and fusion head are optimized. Stage 1 and stage 2 strictly use the same training partition with validation-based model selection.
 - The motivation is the severe seed-to-seed instability observed in the original end-to-end DualPQ-D.
 - The Frozen-DASNet DualPQ achieved 74.46 ± 1.08% Macro-F1 across five seeds under our benchmark.
-*(DO NOT say that both experts are pretrained. Only the DASNet/deep representation is pretrained and frozen in the final method.)*
+*(DO NOT say that both experts are pretrained. Only the DASNet representation is trained in stage 1 and frozen in the final method.)*
 
 ---
 
@@ -150,5 +150,5 @@ Pretrained DASNet → FROZEN → Deep representation
 > MGCNN-SDTransformer must be presented as an existing method/baseline from Jiang et al. (2025). It is not our invention. The underlying mathematics of the Stockwell Transform are established. DASNet, the original DualPQ-D, and Frozen-DASNet DualPQ are our proposed research contributions. Classical physical features are established representations; their implementation within our proposed fusion framework is part of our work.
 
 ## 14. CONTRIBUTION STATEMENT
-"Our primary methodological contribution is a decoupled hybrid PQ disturbance classification framework that combines a pretrained deep waveform representation with classical signal-processing features. The study further provides a leakage-controlled, multi-seed evaluation across 29 disturbance classes and severe noise conditions, revealing substantial differences in robustness and optimization stability among deep, classical, and hybrid approaches."
+"Our primary methodological contribution is a decoupled hybrid PQ disturbance classification framework that combines a stage-1-trained deep waveform representation with classical signal-processing features. The study further provides a leakage-controlled, multi-seed evaluation across 29 disturbance classes and severe noise conditions, revealing substantial differences in robustness and optimization stability among deep, classical, and hybrid approaches."
 

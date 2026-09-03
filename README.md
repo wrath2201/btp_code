@@ -15,14 +15,14 @@ This repository contains the code and evaluation framework for classifying 29 di
 Can we improve the robustness of Power Quality Disturbance classification under severe noise (e.g., 10 dB and 0 dB) by fusing deep learned representations with classical signal-processing features? Furthermore, does decoupling the optimization of the deep and classical branches prevent training instability?
 
 ## Final Method
-Frozen-DASNet DualPQ is our proposed fusion strategy. It combines a pretrained, frozen DASNet representation with a trainable physical-feature branch and classification head. The study evaluates whether decoupling the pretrained deep representation from end-to-end joint optimization improves robustness and stability under the grouped noise-aware benchmark.
+Frozen-DASNet DualPQ is our proposed fusion strategy. It combines a stage-1-trained, frozen DASNet representation with a trainable physical-feature branch and classification head. The study evaluates whether decoupling the stage-1-trained deep representation from end-to-end joint optimization improves robustness and stability under the grouped noise-aware benchmark. Stage 1 and stage 2 use the same training partition, with validation-based model selection.
 
 ## Architecture
 
 ```text
 1280-point waveform
         ↓
-Pretrained DASNet
+Stage-1-trained DASNet
         ↓
 Frozen deep representation
         ↓
@@ -44,7 +44,7 @@ We do not claim ownership or novelty for the MGCNN-SDTransformer architecture, e
 | Component | Provenance | Role |
 |---|---|---|
 | **Classical Ensemble** | Our implementation of established methods | Classical baseline |
-| **DASNet** | Project-developed deep PQD architecture | Deep baseline / pretrained representation |
+| **DASNet** | Project-developed deep PQD architecture | Deep baseline / stage-1-trained representation |
 | **MGCNN-SDTransformer** | External published method (Jiang et al., 2025) | Benchmark |
 | **Original DualPQ-D** | Our proposed initial architecture | Initial hybrid experiment |
 | **Frozen-DASNet DualPQ** | Our final proposed method | Main contribution |

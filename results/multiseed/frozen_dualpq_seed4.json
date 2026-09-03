@@ -4,7 +4,7 @@
   "gate": "concat",
   "data_wave": "data/waveforms.npz",
   "data_feat": "data/dataset.npz",
-  "out": "results/multiseed/frozen_dualpq_seed4.json",
+  "out": "results/multiseed/fixed_frozen_dualpq_seed4.json",
   "checkpoint_dir": "results/multiseed",
   "epochs": 40,
   "batch": 32,
@@ -17,32 +17,32 @@
   "limit_groups": 0,
   "max_temp": 74,
   "no_throttle": false,
-  "best_epoch": 5
+  "best_epoch": 2
  },
  "val": {
-  "macro_f1": 0.041679142243607345
+  "macro_f1": 0.7620000594325399
  },
  "test": {
-  "macro_f1": 0.03806230170942266
+  "macro_f1": 0.7497069598738013
  },
  "test_per_snr": {
   "999": {
-   "macro_f1": 0.028178915850831345
+   "macro_f1": 0.9277927387541249
   },
   "40": {
-   "macro_f1": 0.032560844407525005
+   "macro_f1": 0.9303139025136689
   },
   "30": {
-   "macro_f1": 0.035964986957918874
+   "macro_f1": 0.9085690049924131
   },
   "20": {
-   "macro_f1": 0.03660682191481805
+   "macro_f1": 0.8372451598837406
   },
   "10": {
-   "macro_f1": 0.03484963053563425
+   "macro_f1": 0.6315852196052882
   },
   "0": {
-   "macro_f1": 0.029075726722560695
+   "macro_f1": 0.2599602953396921
   }
  }
 }

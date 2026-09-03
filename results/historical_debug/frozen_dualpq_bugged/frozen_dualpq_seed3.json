@@ -4,45 +4,45 @@
   "gate": "concat",
   "data_wave": "data/waveforms.npz",
   "data_feat": "data/dataset.npz",
-  "out": "results/multiseed/fixed_frozen_dualpq_seed2.json",
+  "out": "results/multiseed/frozen_dualpq_seed3.json",
   "checkpoint_dir": "results/multiseed",
   "epochs": 40,
   "batch": 32,
   "lr": 0.001,
   "warmup": 3,
   "patience": 12,
-  "seed": 2,
+  "seed": 3,
   "split_seed": 0,
   "workers": 2,
   "limit_groups": 0,
   "max_temp": 74,
   "no_throttle": false,
-  "best_epoch": 5
+  "best_epoch": 1
  },
  "val": {
-  "macro_f1": 0.7625129409115704
+  "macro_f1": 0.03620925751950127
  },
  "test": {
-  "macro_f1": 0.7523430502891572
+  "macro_f1": 0.031757656824772995
  },
  "test_per_snr": {
   "999": {
-   "macro_f1": 0.9199576708447043
+   "macro_f1": 0.03935864652111392
   },
   "40": {
-   "macro_f1": 0.9234531184807515
+   "macro_f1": 0.03755856512225795
   },
   "30": {
-   "macro_f1": 0.8920221790399209
+   "macro_f1": 0.03616703711425127
   },
   "20": {
-   "macro_f1": 0.825743241407608
+   "macro_f1": 0.02393333993359043
   },
   "10": {
-   "macro_f1": 0.6296664119645204
+   "macro_f1": 0.019955199588682374
   },
   "0": {
-   "macro_f1": 0.2994315092908926
+   "macro_f1": 0.02832250423596091
   }
  }
 }
