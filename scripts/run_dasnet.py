@@ -294,7 +294,7 @@ def run(args):
             gov.step()
 
         pv = predict(model, Wva, device, args.batch, gov=gov)
-        f1v = f1_score(yva, pv.argmax(1) + 1, average="macro")
+        f1v = f1_score(yva, pv.argmax(1) + 1, labels=np.arange(1, 30), average="macro")
         law = model.dst.law_summary()
         dt = time.perf_counter() - t0
         gtxt = (f"  gpu={gov.temp}C pause={gov.pause*1e3:.0f}ms"

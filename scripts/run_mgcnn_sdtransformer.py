@@ -175,7 +175,7 @@ def main():
                 
         preds = np.concatenate(preds)
         trues = np.concatenate(trues)
-        val_f1 = f1_score(trues, preds, average="macro")
+        val_f1 = f1_score(trues, preds, labels=np.arange(29), average="macro")
 
         print(f"Epoch {epoch:02d} | Val F1: {val_f1:.4f}")
 
@@ -211,7 +211,7 @@ def main():
     preds = np.concatenate(preds)
     trues = np.concatenate(trues)
     
-    test_f1 = f1_score(trues, preds, average="macro")
+    test_f1 = f1_score(trues, preds, labels=np.arange(29), average="macro")
     
     # Per-SNR Evaluation
     res_snr = {}
@@ -219,7 +219,7 @@ def main():
     for snr_val in [999, 40, 30, 20, 10, 0]:
         mask = (st == snr_val)
         if np.any(mask):
-            f1_snr = f1_score(trues[mask], preds[mask], average="macro")
+            f1_snr = f1_score(trues[mask], preds[mask], labels=np.arange(29), average="macro")
             res_snr[str(snr_val)] = {"macro_f1": float(f1_snr)}
 
     res = {
