@@ -141,9 +141,10 @@ def make_combined_heatmap(grids, class_labels, model_name, outpath):
     cbar.ax.tick_params(labelsize=8)
 
     # Super-title
+    # Keep the figure title factual: commentary belongs in the caption, not
+    # burned into a PNG that may go into a submission.
     fig.suptitle(
-        f"Per-class metrics by noise level ({model_name})\n"
-        f"— note how the accuracy panel stays green even where F1 and kappa collapse",
+        f"Per-class metrics by noise level ({model_name})",
         fontsize=11, fontweight="bold", y=0.98,
     )
 
@@ -166,12 +167,12 @@ def main():
     for model_name, model_dir in MODEL_DIRS.items():
         csv_path = os.path.join(model_dir, "per_class_per_snr.csv")
 
-        if not os.path.exists(csv_path):
-            print(f"  ⚠ skipping {model_name}: {csv_path} not found")
-            continue
-
         # If --model is set, only process the matching model
         if a.model and a.model not in model_dir:
+            continue
+
+        if not os.path.exists(csv_path):
+            print(f"  skipping {model_name}: {csv_path} not found")
             continue
 
         print(f"\n=== {model_name} ===")
