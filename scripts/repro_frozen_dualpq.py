@@ -68,23 +68,39 @@ def embed(seed, W, batch, threads):
     net.eval()
     print(f"[embed] {ck} -> {len(W)} rows")
 
-    out, t0 = [], time.perf_counter()
-    for a in range(0, len(W), batch):
-        x = torch.from_numpy(np.ascontiguousarray(W[a:a + batch])).float()
-        snr = net.snr_est(x)[:, None] / 40.0
-        cond = net.cond_mlp(snr)
-        if not net.film_on:
-            cond = torch.zeros_like(cond)
-        h = net._tf_image(x)
-        for st in net.stages:
-            h = st(h, cond)
-        out.append(h.mean(dim=(2, 3)).numpy().astype(np.float32))
-        if (a // batch) % 50 == 0:
-            el = time.perf_counter() - t0
-            print(f"    {a}/{len(W)}  [{el:.0f}s, ~{el/max(a+batch,1)*(len(W)-a):.0f}s left]",
-                  flush=True)
-    Z = np.vstack(out)
+    # Written as resumable shards: a full pass is ~20 min of CPU and an
+    # interrupted run should not start over. CHUNK rows per shard file.
+    CHUNK = 2000
+    t0 = time.perf_counter()
+    parts = []
+    for c0 in range(0, len(W), CHUNK):
+        c1 = min(c0 + CHUNK, len(W))
+        shard = os.path.join(EMB_DIR, f"z_deep_seed{seed}_{c0:06d}.npy")
+        parts.append(shard)
+        if os.path.exists(shard):
+            continue
+        out = []
+        for a in range(c0, c1, batch):
+            x = torch.from_numpy(np.ascontiguousarray(W[a:min(a + batch, c1)])).float()
+            snr = net.snr_est(x)[:, None] / 40.0
+            cond = net.cond_mlp(snr)
+            if not net.film_on:
+                cond = torch.zeros_like(cond)
+            h = net._tf_image(x)
+            for st in net.stages:
+                h = st(h, cond)
+            out.append(h.mean(dim=(2, 3)).numpy().astype(np.float32))
+            del x, h, cond, snr
+        np.save(shard, np.vstack(out))
+        del out
+        el = time.perf_counter() - t0
+        done = c1
+        print(f"    {done}/{len(W)}  [{el:.0f}s, ~{el/max(done,1)*(len(W)-done):.0f}s left]",
+              flush=True)
+    Z = np.concatenate([np.load(q) for q in parts])
     np.save(cache, Z)
+    for q in parts:
+        os.remove(q)
     print(f"[embed] saved {cache}  {Z.shape}")
     return Z
 

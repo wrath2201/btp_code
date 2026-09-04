@@ -38,17 +38,36 @@ Historical/debug artifacts are excluded from this document and are strictly reta
 - **Size:** 34,800 total samples (1280-length, 29 classes).
 - **Conditions:** Clean, 40, 30, 20, 10, 0 dB.
 - **Split:** Grouped stratified 70/15/15. All noise variants of a given base waveform remain tightly within a single partition.
-- **Seeds:** 5 deep/hybrid training seeds (0, 1, 2, 3, 4) evaluating training run variability on the exact same dataset partition.
+- **Seeds:** 5 deep/hybrid training seeds (0, 1, 2, 3, 4) evaluating
+  training-run variability on the exact same dataset partition — **with one
+  exception**: `mgcnn_sdtransformer_seed{1,2,3,4}.json` record
+  `split_seed == seed`, so that model was evaluated on five *different*
+  partitions. Its mean and SD therefore mix partition variance with training
+  variance, its per-SNR row is computed over different test waveforms, and it
+  is excluded from every paired test. Rerunning those four seeds with
+  `--split-seed 0` is outstanding work.
+- **Baseline capacity:** all five `baseline_seed*.json` runs used `--fast`
+  (RF 300→150 trees, LightGBM 250→120 iters, MLP 400→120 iters) while every
+  proposed-method run used its full configuration. See README §7.
+- **Significance:** `python scripts/stats_tests.py` regenerates every p-value,
+  confidence interval and variance test quoted anywhere in this repository.
 
 ## 4. Final Artifact Paths
 
-All final prediction artifacts are stored in `results/multiseed/`.
+Reconstructed prediction arrays for the Classical Ensemble, DASNet and
+MGCNN-SDTransformer are committed under `results/preds/`. Prediction arrays
+for **Frozen-DASNet DualPQ and Original DualPQ-D are not committed** — those
+two scripts did not save weights, and the `*_preds.npz` files they wrote were
+excluded by `.gitignore`. `results/per_class_snr_frozen/` was generated from
+local copies of `results/multiseed/frozen_dualpq_seed*_preds.npz`, which are
+not in this repository; committing them (5 files, ~7 KB each) would make those
+metrics independently verifiable.
 
 | Model | Script | Artifact Pattern | Prediction Arrays |
 |---|---|---|---|
 | **Frozen-DASNet DualPQ** | `scripts/run_frozen_dualpq.py` | `frozen_dualpq_seed[0-4].json` | `frozen_dualpq_seed[0-4]_preds.npz` |
 | **Original DualPQ-D** | `scripts/run_dualpq.py` | `dualpq_concat_seed[0-4].json` | `dualpq_concat_seed[0-4]_preds.npz` |
 | **DASNet** | `scripts/run_dasnet.py` | `dasnet_seed[0-4].json` | `dasnet_seed[0-4]_preds.npz` |
-| **MGCNN-SDTransformer** | `scripts/run_mgcnn.py` | `mgcnn_seed[0-4].json` | `mgcnn_seed[0-4]_preds.npz` |
+| **MGCNN-SDTransformer** | `scripts/run_mgcnn_sdtransformer.py` | `results/mgcnn_sdtransformer_seed[0-4].json` | `results/preds/mgcnn_seed[0-4]_preds.npz` |
 
 *(Note: Classical Ensemble results were derived using cross-validation over the training features in `experiments/multiseed.py`).*

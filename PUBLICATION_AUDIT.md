@@ -2,6 +2,15 @@
 
 This report serves as the ultimate scientific baseline for the paper. All metrics herein have been verified directly from the raw prediction arrays (`*_preds.npz`) resulting from a stringent 5-seed evaluation protocol.
 
+> **Read this first.** Three qualifications apply to every table below and are
+> documented in `README.md` §7/§9/§11 and `FINAL_SCIENTIFIC_AUDIT.md`:
+> the Classical Ensemble rows come from `--fast` (reduced-capacity) runs;
+> MGCNN-SDTransformer seeds 1–4 used a *different data partition per seed*;
+> and the Frozen vs Original DualPQ-D comparison varies three factors at once.
+> The confidence intervals here are *t*-based, which is the correct convention
+> at n = 5 — `FINAL_SCIENTIFIC_AUDIT.md` Part 1 previously used *z*.
+> `python scripts/stats_tests.py` regenerates every statistic in both files.
+
 ## 1. Authoritative Final Results (Macro-F1)
 | Model | Mean ± Sample SD | 95% CI |
 |-------|-----------------|---------|
@@ -32,6 +41,16 @@ This report serves as the ultimate scientific baseline for the paper. All metric
 ## 4. Statistical Testing
 A paired bootstrap procedure ($N=1000$) was performed on the **Seed-0** test predictions.
 *   **Frozen-DASNet vs Classical Ensemble:** +2.09% (p < 0.001)
+*   **Across-seed paired t-test** (the test that matches the 5-seed protocol,
+    rather than resampling one seed's test set): +2.94 pp vs the
+    validation-selected classical ensemble (95% CI 1.84–4.04, *p* = 0.0018)
+    and **+2.44 pp vs `geometric_vote`**, the strongest fixed classical
+    variant (95% CI 1.06–3.81, *p* = 0.0079). Quote +2.44. A seed-0 bootstrap
+    measures test-set sampling error at one seed; it does not measure
+    across-seed variability, and the two should not be conflated.
+*   **Per-SNR** (paired over seeds): significant at clean/40/30 dB
+    (*p* ≤ 0.002); **not** significant at 20 dB (*p* = 0.112), 10 dB
+    (*p* = 0.928) or 0 dB (*p* = 0.409).
 *   **Frozen-DASNet vs Original DualPQ:** -0.12% (p = 0.5510)
 **Interpretation:** On Seed 0, Original DualPQ achieved one of its only successful training runs (72.67%), making Frozen-DASNet (72.55%) statistically indistinguishable from it *for that specific seed*. However, Frozen-DASNet significantly outperforms the Classical Ensemble on Seed 0. Across all five seeds (descriptive statistics), Frozen-DASNet is vastly superior in average stability and performance.
 
