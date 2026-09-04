@@ -201,9 +201,14 @@ class DualPQNet(nn.Module):
             
         self.fc = nn.Linear(final_dim, N_CLASSES)
 
-    def forward(self, w, x_feat):
+    def forward(self, w, x_feat, classical_only=False):
         # 1. Get representations
-        z_deep = self.deep_expert(w)          # (B, 256)
+        if classical_only:
+            # Skip the heavy CNN forward pass entirely
+            z_deep = torch.zeros(w.shape[0], 256, device=w.device)
+        else:
+            z_deep = self.deep_expert(w)          # (B, 256)
+            
         z_class = self.classical_expert(x_feat) # (B, 256)
         
         # 2. Gate & Fuse

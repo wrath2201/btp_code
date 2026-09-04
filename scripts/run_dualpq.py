@@ -69,14 +69,27 @@ class ThermalGovernor:
         self.target = target_c
         self.poll = poll
         self.max_pause = max_pause
+        import torch
         self.enabled = enabled and torch.cuda.is_available()
         self.pause = 0.15 if self.enabled else 0.0
         self.temp = None
         self._n = 0
 
     @staticmethod
+    def check_memory():
+        try:
+            with open('/proc/meminfo', 'r') as f:
+                lines = f.readlines()
+            mem_total = next(int(line.split()[1]) for line in lines if line.startswith('MemTotal:'))
+            mem_avail = next(int(line.split()[1]) for line in lines if line.startswith('MemAvailable:'))
+            return mem_avail / mem_total
+        except Exception:
+            return 1.0
+
+    @staticmethod
     def read_temp():
         try:
+            import subprocess
             out = subprocess.run(
                 ["nvidia-smi", "--query-gpu=temperature.gpu",
                  "--format=csv,noheader,nounits"],
@@ -90,6 +103,10 @@ class ThermalGovernor:
             return
         self._n += 1
         if self._n % self.poll == 0:
+            while self.check_memory() < 0.10:
+                import time
+                print("WARNING: RAM available < 10%. Pausing for 60s to prevent system hang...", flush=True)
+                time.sleep(60.0)
             t = self.read_temp()
             if t is not None:
                 self.temp = t
@@ -99,6 +116,8 @@ class ThermalGovernor:
                 elif t < self.target - 3:
                     self.pause = max(0.0, self.pause - 0.015)
         if self.pause > 0:
+            import torch
+            import time
             torch.cuda.synchronize()
             time.sleep(self.pause)
 
@@ -117,7 +136,7 @@ def predict(model, W, X, device, batch=64, amp=True, gov=None):
         x = torch.from_numpy(X[a:a + batch]).to(device)
         with torch.autocast(device_type=device.type, dtype=torch.float16,
                             enabled=amp and device.type == "cuda"):
-            logits, g_val = model(w, x)
+            logits, g_val = model(w, x, classical_only=getattr(model, "classical_only_mode", False))
             probs = model.probs(logits.float()).cpu().numpy()
             
             # g_val is None for "concat" gate type
@@ -196,6 +215,7 @@ def run(args):
     # ---- Model ----------------------------------------------------------- #
     model = DualPQNet(gate_type=args.gate, n_samples=n_samples, 
                       head=args.head, learnable_dst=True, film=True).to(device)
+    model.classical_only_mode = getattr(args, "classical_only", False)
     n_par = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"[model] DualPQNet gate={args.gate} ({n_par/1e6:.2f}M params)")
 
@@ -220,7 +240,7 @@ def run(args):
         return 0.5 * (1.0 + math.cos(math.pi * t)) * 0.99 + 0.01
 
     sched = torch.optim.lr_scheduler.LambdaLR(opt, lr_lambda)
-    scaler_amp = torch.amp.GradScaler(enabled=device.type == "cuda")
+    scaler_amp = torch.amp.GradScaler(enabled=not args.no_amp and device.type == "cuda")
 
     # ---- Train ----------------------------------------------------------- #
     Wva, Xva, yva, sva = W[i_va], X[i_va], y[i_va], snr[i_va]
@@ -239,8 +259,8 @@ def run(args):
             t = t.to(device, non_blocking=True)
             
             opt.zero_grad(set_to_none=True)
-            with torch.autocast(device_type=device.type, dtype=torch.float16, enabled=device.type == "cuda"):
-                logits, _ = model(w, x)
+            with torch.autocast(device_type=device.type, dtype=torch.float16, enabled=not args.no_amp and device.type == "cuda"):
+                logits, _ = model(w, x, classical_only=args.classical_only)
                 # Hack: classification_loss expects a DASNet instance for the DST regularizer
                 loss = classification_loss(model.deep_expert.dasnet, logits.float(), t, epoch)
                 
@@ -254,7 +274,7 @@ def run(args):
             n_seen += len(t)
             gov.step()
 
-        pva, _ = predict(model, Wva, Xva, device, args.batch, gov=gov)
+        pva, _ = predict(model, Wva, Xva, device, args.batch, amp=not args.no_amp, gov=gov)
         f1v = f1_score(yva, pva.argmax(1) + 1, average="macro")
         law = model.deep_expert.dasnet.dst.law_summary()
         dt = time.perf_counter() - t0
@@ -276,8 +296,8 @@ def run(args):
 
     # ---- Test ------------------------------------------------------------- #
     model.load_state_dict(best_state)
-    pva, gva = predict(model, Wva, Xva, device, args.batch, gov=gov)
-    pte, gte = predict(model, Wte, Xte, device, args.batch, gov=gov)
+    pva, gva = predict(model, Wva, Xva, device, args.batch, amp=not args.no_amp, gov=gov)
+    pte, gte = predict(model, Wte, Xte, device, args.batch, amp=not args.no_amp, gov=gov)
     ypv, ypt = pva.argmax(1) + 1, pte.argmax(1) + 1
 
     # Compute gate statistics by SNR
@@ -340,6 +360,8 @@ if __name__ == "__main__":
     ap.add_argument("--limit-groups", type=int, default=30)
     ap.add_argument("--max-temp", type=int, default=74)
     ap.add_argument("--no-throttle", action="store_true")
+    ap.add_argument("--classical-only", action="store_true")
+    ap.add_argument("--no-amp", action="store_true")
     ap.add_argument("--pilot", action="store_true")
     args = ap.parse_args()
     
