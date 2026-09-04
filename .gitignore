@@ -25,6 +25,16 @@ shards/
 unseen/
 
 # ---------------------------------------------------------------------------
+# Exception: the reconstructed test-set predictions are the evidence behind the
+# per-class metrics in results/per_class_snr/. They are labels only (yte, yp,
+# ste) -- 68 KB for all eleven files -- so they are committed deliberately, so
+# that every reported per-class / per-SNR number can be recomputed from the
+# repository alone. See docs/PER_CLASS_SNR_EVALUATION.md.
+# ---------------------------------------------------------------------------
+!results/preds/
+!results/preds/*.npz
+
+# ---------------------------------------------------------------------------
 # Python
 # ---------------------------------------------------------------------------
 __pycache__/

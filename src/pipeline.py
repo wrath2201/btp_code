@@ -409,8 +409,12 @@ def run(data_path, out_path, n_folds=10, seed=0, n_jobs=2, fast=False,
             heat[ci, si] = (yp[m] == ci + 1).mean() if m.any() else np.nan
     results["per_class_per_snr_recall"] = heat.tolist()
 
-    # confusion matrices at the two extremes present in the data
-    for s in dict.fromkeys((LV[0], LV[-1])):
+    # Confusion matrix at EVERY level present, not just the two extremes.
+    # Precision, F1 and Cohen's kappa per class per SNR are all derivable from
+    # these and from nothing else in this file, so storing only LV[0] and
+    # LV[-1] made four of the six noise conditions unanalysable per class.
+    # Six 29x29 integer matrices cost ~30 KB of JSON.
+    for s in dict.fromkeys(LV):
         m = ste == s
         cm = confusion_matrix(yte[m], yp[m], labels=np.arange(1, 30))
         results[f"confusion_snr{s}"] = cm.tolist()
