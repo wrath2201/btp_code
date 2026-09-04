@@ -89,6 +89,24 @@ All figures reproducible with `python scripts/stats_tests.py`.
 > strongest classical variant — is only 0.02 pp, which is why
 > `geometric_vote` is quoted above as the fair reference.
 >
+> **Which classical figure is which.** Five different baseline numbers appear
+> across this repository's documents. They are all correct in their own
+> context; this is the reconciliation.
+>
+> | Figure | What it is | Source |
+> |---|---|---|
+> | **72.02 ± 0.27** | `geometric_vote`, `--fast`, 5 seeds — **the reference for the headline margin** | `results/multiseed/baseline_seed*.json` |
+> | 71.52 ± 0.84 | per-seed validation-selected ensemble, `--fast`, 5 seeds | same |
+> | 72.12 | `weighted_vote`, **full capacity**, seed 0 only | `results/results.json` |
+> | 0.7212 | the same 72.12, as quoted in `PROJECT_HISTORY.md` and `docs/DUALPQ_NET_PROPOSAL.md` — the target the project originally set itself | historical |
+> | 72.02 ± 0.24 | a superseded early figure; see the banner in `IN_DEPTH_PAPER_CONTEXT.md` | historical |
+>
+> Frozen-DASNet DualPQ (74.46) exceeds `geometric_vote` by **+2.44 pp** and the
+> full-capacity seed-0 point by **+2.34 pp**. The two agree to within a tenth
+> of a point, which is the useful thing: the margin does not depend on which
+> reasonable baseline you pick. Quote 72.02 ± 0.27, since it is the only one
+> measured over five seeds at a fixed configuration.
+>
 > **Ensemble selection.** The "validation-selected" row applies the per-seed
 > validation rule, which chose `stacked` (the weakest variant) on 2 of 5
 > seeds. That depresses the baseline by roughly half a point relative to

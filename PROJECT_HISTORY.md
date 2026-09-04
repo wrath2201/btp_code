@@ -13,6 +13,11 @@ When the repository was originally cloned, it contained a highly robust classica
 * **Data:** 34,800 synthetic waveform rows across 6 noise levels (Clean, 40dB, 30dB, 20dB, 10dB, 0dB).
 * **Feature Extraction:** 191 heavily mathematically engineered features.
 * **Baseline Result:** An ensemble of LightGBM and Random Forest achieved a very strong **Macro-F1 score of 0.7212**.
+  *(0.7212 is the full-capacity, seed-0 `weighted_vote` figure from
+  `results/results.json`. The five-seed figures reported in the paper are
+  72.02 ± 0.27 for `geometric_vote` and 71.52 ± 0.84 for the
+  validation-selected ensemble, both from `--fast` runs — see `README.md` §7
+  for the reconciliation.)*
 
 ## 2. The First Deep Learning Attempt (DASNet)
 The previous AI agent (OpenCode) was tasked with building a Deep Learning model to beat the baseline. It developed **DASNet**, a purely deep-learning approach characterized by:

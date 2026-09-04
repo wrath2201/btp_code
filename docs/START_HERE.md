@@ -43,6 +43,9 @@ The authoritative results are directly extracted from saved prediction artifacts
 |---|---:|
 | **Frozen-DASNet DualPQ** | **74.46% ± 1.08%** |
 | Classical Ensemble | 71.52% ± 0.84% |
+<!-- 71.52 is the validation-selected ensemble from --fast runs. The headline
+     margin in the paper is quoted against geometric_vote, 72.02 ± 0.27.
+     See README.md section 7. -->
 | DASNet | 69.72% ± 9.11% |
 | MGCNN-SDTransformer | 66.59% ± 0.98% |
 | Original DualPQ-D | 61.63% ± 15.58% |

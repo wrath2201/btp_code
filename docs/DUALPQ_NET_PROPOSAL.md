@@ -60,3 +60,10 @@ This architecture explicitly acknowledges that Deep Learning and Classical Signa
 1. **Modify Data Loader:** Update `scripts/run_dasnet.py` to feed both the waveform and the 191 features into the PyTorch training loop simultaneously.
 2. **Rewrite the PyTorch Model:** Update `src/dasnet.py` to include the Path 2 MLP and the Sigmoid Gating mechanism.
 3. **Train & Evaluate:** Run the model on the exact same leakage-free dataset splits to prove that it beats the 0.7212 baseline across the entire noise spectrum.
+
+*Outcome:* Frozen-DASNet DualPQ reaches 74.46 ± 1.08, clearing the 0.7212
+target set here by +2.34 pp — but only in the clean/40 dB/30 dB regime. Across
+"the entire noise spectrum" it does **not** hold: at 20, 10 and 0 dB the
+difference from the classical ensemble is not statistically distinguishable
+from zero (README §8). See `README.md` §7 for how 0.7212 relates to the
+five-seed figures quoted in the paper.
