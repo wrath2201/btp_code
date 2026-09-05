@@ -97,29 +97,31 @@ def load_data(path):
 # the optimization changes; training simply proceeds more slowly when hot.
 # ========================================================================== #
 class ThermalGovernor:
-    """
-    Proportional controller: every `poll` steps read the GPU temperature and
-    adjust a per-step pause so the temperature settles at `target_c`.
-
-      temp > target      -> lengthen the pause (0.03 s per degree over)
-      temp < target - 3  -> shorten it gradually
-
-    The pause is applied after cuda.synchronize(), so the GPU is genuinely
-    idle (not just the host) during the pause.
-    """
-
     def __init__(self, target_c=74, poll=8, max_pause=2.0, enabled=True):
         self.target = target_c
         self.poll = poll
         self.max_pause = max_pause
+        import torch
         self.enabled = enabled and torch.cuda.is_available()
-        self.pause = 0.15 if self.enabled else 0.0   # start gently
+        self.pause = 0.15 if self.enabled else 0.0
         self.temp = None
         self._n = 0
 
     @staticmethod
+    def check_memory():
+        try:
+            with open('/proc/meminfo', 'r') as f:
+                lines = f.readlines()
+            mem_total = next(int(line.split()[1]) for line in lines if line.startswith('MemTotal:'))
+            mem_avail = next(int(line.split()[1]) for line in lines if line.startswith('MemAvailable:'))
+            return mem_avail / mem_total
+        except Exception:
+            return 1.0
+
+    @staticmethod
     def read_temp():
         try:
+            import subprocess
             out = subprocess.run(
                 ["nvidia-smi", "--query-gpu=temperature.gpu",
                  "--format=csv,noheader,nounits"],
@@ -133,6 +135,10 @@ class ThermalGovernor:
             return
         self._n += 1
         if self._n % self.poll == 0:
+            while self.check_memory() < 0.10:
+                import time
+                print("WARNING: RAM available < 10%. Pausing for 60s to prevent system hang...", flush=True)
+                time.sleep(60.0)
             t = self.read_temp()
             if t is not None:
                 self.temp = t
@@ -142,6 +148,8 @@ class ThermalGovernor:
                 elif t < self.target - 3:
                     self.pause = max(0.0, self.pause - 0.015)
         if self.pause > 0:
+            import torch
+            import time
             torch.cuda.synchronize()
             time.sleep(self.pause)
 
