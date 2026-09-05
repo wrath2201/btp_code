@@ -1,0 +1,73 @@
+{
+ "model": "dualpq",
+ "config": {
+  "gate": "concat",
+  "data_wave": "data/waveforms.npz",
+  "data_feat": "data/dataset.npz",
+  "out": "results/multiseed/dualpq_concat_noaug_seed1.json",
+  "epochs": 40,
+  "batch": 32,
+  "lr": 0.001,
+  "lr_dst": 0.005,
+  "warmup": 3,
+  "patience": 12,
+  "seed": 1,
+  "split_seed": 0,
+  "workers": 2,
+  "head": "softmax",
+  "no_aug": true,
+  "p_aug": 0.5,
+  "limit_groups": 30,
+  "max_temp": 74,
+  "no_throttle": false,
+  "classical_only": false,
+  "no_amp": true,
+  "pilot": false,
+  "n_params": 1536828,
+  "best_epoch": 23,
+  "wall_min": 83.98123786533252
+ },
+ "val": {
+  "macro_f1": 0.7270498711758829,
+  "balanced_acc": 0.7285440613026821,
+  "accuracy": 0.728544061302682
+ },
+ "test": {
+  "macro_f1": 0.7147540325267421,
+  "balanced_acc": 0.7164750957854407,
+  "accuracy": 0.7164750957854407
+ },
+ "test_per_snr": {
+  "999": {
+   "macro_f1": 0.874306692649304,
+   "balanced_acc": 0.8770114942528735,
+   "accuracy": 0.8770114942528736
+  },
+  "40": {
+   "macro_f1": 0.8720878650849586,
+   "balanced_acc": 0.8735632183908045,
+   "accuracy": 0.8735632183908046
+  },
+  "30": {
+   "macro_f1": 0.8636697716627139,
+   "balanced_acc": 0.8655172413793103,
+   "accuracy": 0.8655172413793103
+  },
+  "20": {
+   "macro_f1": 0.8111255383794026,
+   "balanced_acc": 0.8137931034482759,
+   "accuracy": 0.8137931034482758
+  },
+  "10": {
+   "macro_f1": 0.6056703935639033,
+   "balanced_acc": 0.6149425287356323,
+   "accuracy": 0.6149425287356322
+  },
+  "0": {
+   "macro_f1": 0.2330095660332491,
+   "balanced_acc": 0.2540229885057471,
+   "accuracy": 0.2540229885057471
+  }
+ },
+ "gate_stats": {}
+}
