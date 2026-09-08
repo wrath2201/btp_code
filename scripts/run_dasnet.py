@@ -196,6 +196,15 @@ def run(args):
              if device.type == "cuda" else ""))
 
     W, y, group, snr = load_data(args.data)
+    
+    if getattr(args, "class_subset", None):
+        from src.subset_utils import apply_subset, filter_dataset
+        subset_classes = apply_subset(args.class_subset)
+        W, _, y, group, snr, _ = filter_dataset(W, None, y, group, snr, subset_classes)
+        global N_CLASSES
+        N_CLASSES = len(subset_classes)
+        print(f"[subset] Applied subset {args.class_subset} (K={N_CLASSES} classes)")
+        
     n_samples = W.shape[1]
     print(f"data: {W.shape[0]} waveforms x {n_samples} samples, "
           f"{len(np.unique(group))} groups, "
@@ -302,7 +311,7 @@ def run(args):
             gov.step()
 
         pv = predict(model, Wva, device, args.batch, gov=gov)
-        f1v = f1_score(yva, pv.argmax(1) + 1, labels=np.arange(1, 30), average="macro")
+        f1v = f1_score(yva, pv.argmax(1) + 1, labels=np.arange(1, N_CLASSES + 1), average="macro")
         law = model.dst.law_summary()
         dt = time.perf_counter() - t0
         gtxt = (f"  gpu={gov.temp}C pause={gov.pause*1e3:.0f}ms"
@@ -344,7 +353,7 @@ def run(args):
         "test_per_snr": per_snr(yte, ypt, ste),
         "val_per_snr": per_snr(yva, ypv, sva),
         "confusion_all": confusion_matrix(
-            yte, ypt, labels=np.arange(1, 30)).tolist(),
+            yte, ypt, labels=np.arange(1, N_CLASSES + 1)).tolist(),
         "dst_law": model.dst.law_summary(),
         "history": history,
     }
@@ -375,9 +384,20 @@ def run(args):
 
     with open(args.out, "w") as fh:
         json.dump(results, fh, indent=1)
-    np.savez_compressed(args.out.replace(".json", "_preds.npz"),
-                        yte=yte, ste=ste, yp=ypt, P=pte,
-                        yva=yva, sva=sva, Pva=pva)
+        
+    if getattr(args, "class_subset", None):
+        from src.subset_utils import remap_predictions_to_original
+        yte_mapped = remap_predictions_to_original(yte, subset_classes)
+        ypt_mapped = remap_predictions_to_original(ypt, subset_classes)
+        yva_mapped = remap_predictions_to_original(yva, subset_classes)
+        pv_mapped = remap_predictions_to_original(pva.argmax(1) + 1, subset_classes)
+        np.savez_compressed(args.out.replace(".json", "_preds.npz"),
+                            yte=yte_mapped, ste=ste, yp=ypt_mapped, P=pte,
+                            yva=yva_mapped, sva=sva, Pva=pva)
+    else:
+        np.savez_compressed(args.out.replace(".json", "_preds.npz"),
+                            yte=yte, ste=ste, yp=ypt, P=pte,
+                            yva=yva, sva=sva, Pva=pva)
     print(f"\nsaved -> {args.out}")
     return results
 
@@ -409,6 +429,8 @@ if __name__ == "__main__":
                     help="disable the thermal governor (full speed)")
     ap.add_argument("--init-from", default=None,
                     help="warm-start weights from a checkpoint (.pt)")
+    ap.add_argument("--class-subset", default=None,
+                    help="train and evaluate on a specific class subset (e.g., top17)")
     ap.add_argument("--pilot", action="store_true",
                     help="shortcut: --limit-groups 30 --epochs 8")
     args = ap.parse_args()

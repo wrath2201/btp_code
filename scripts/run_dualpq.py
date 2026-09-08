@@ -175,6 +175,15 @@ def run(args):
     print(f"device: {device}")
 
     W, X, y, group, snr = load_dual_data(args.data_wave, args.data_feat)
+    
+    if getattr(args, "class_subset", None):
+        from src.subset_utils import apply_subset, filter_dataset
+        subset_classes = apply_subset(args.class_subset)
+        W, X, y, group, snr, _ = filter_dataset(W, X, y, group, snr, subset_classes)
+        global N_CLASSES
+        N_CLASSES = len(subset_classes)
+        print(f"[subset] Applied subset {args.class_subset} (K={N_CLASSES} classes)")
+        
     n_samples = W.shape[1]
     
     # ---- Identical Split ------------------------------------------------- #
@@ -334,8 +343,15 @@ def run(args):
     with open(args.out, "w") as fh:
         json.dump(results, fh, indent=1)
     
-    np.savez_compressed(args.out.replace(".json", "_preds.npz"),
-                        yte=yte, ste=ste, yp=ypt, P=pte, gte=gte)
+    if getattr(args, "class_subset", None):
+        from src.subset_utils import remap_predictions_to_original
+        yte_mapped = remap_predictions_to_original(yte, subset_classes)
+        ypt_mapped = remap_predictions_to_original(ypt, subset_classes)
+        np.savez_compressed(args.out.replace(".json", "_preds.npz"),
+                            yte=yte_mapped, ste=ste, yp=ypt_mapped, P=pte, gte=gte)
+    else:
+        np.savez_compressed(args.out.replace(".json", "_preds.npz"),
+                            yte=yte, ste=ste, yp=ypt, P=pte, gte=gte)
     print(f"\nsaved -> {args.out}")
 
 
@@ -362,6 +378,7 @@ if __name__ == "__main__":
     ap.add_argument("--no-throttle", action="store_true")
     ap.add_argument("--classical-only", action="store_true")
     ap.add_argument("--no-amp", action="store_true")
+    ap.add_argument("--class-subset", default=None)
     ap.add_argument("--pilot", action="store_true")
     args = ap.parse_args()
     

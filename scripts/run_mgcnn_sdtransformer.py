@@ -108,6 +108,7 @@ def main():
     parser.add_argument("--workers", type=int, default=2)
     parser.add_argument("--max-temp", type=int, default=74)
     parser.add_argument("--no-throttle", action="store_true")
+    parser.add_argument("--class-subset", default=None)
     
     args = parser.parse_args()
 
@@ -126,6 +127,14 @@ def main():
     y = d_feat["y"] - 1
     groups = d_feat["group"]
     snr = d_feat["snr"]
+    
+    if getattr(args, "class_subset", None):
+        from src.subset_utils import apply_subset, filter_dataset
+        subset_classes = apply_subset(args.class_subset)
+        W, _, y, groups, snr, _ = filter_dataset(W, None, y, groups, snr, subset_classes)
+        global N_CLASSES
+        N_CLASSES = len(subset_classes)
+        print(f"[subset] Applied subset {args.class_subset} (K={N_CLASSES} classes)")
 
     (i_tr, i_va, i_te), _ = grouped_stratified_split(y, groups, seed=args.split_seed)
     
@@ -196,7 +205,7 @@ def main():
                 
         preds = np.concatenate(preds)
         trues = np.concatenate(trues)
-        val_f1 = f1_score(trues, preds, labels=np.arange(29), average="macro")
+        val_f1 = f1_score(trues, preds, labels=np.arange(N_CLASSES), average="macro")
 
         print(f"Epoch {epoch:02d} | Val F1: {val_f1:.4f}")
 
@@ -232,7 +241,7 @@ def main():
     preds = np.concatenate(preds)
     trues = np.concatenate(trues)
     
-    test_f1 = f1_score(trues, preds, labels=np.arange(29), average="macro")
+    test_f1 = f1_score(trues, preds, labels=np.arange(N_CLASSES), average="macro")
     
     # Per-SNR Evaluation
     res_snr = {}
@@ -240,7 +249,7 @@ def main():
     for snr_val in [999, 40, 30, 20, 10, 0]:
         mask = (st == snr_val)
         if np.any(mask):
-            f1_snr = f1_score(trues[mask], preds[mask], labels=np.arange(29), average="macro")
+            f1_snr = f1_score(trues[mask], preds[mask], labels=np.arange(N_CLASSES), average="macro")
             res_snr[str(snr_val)] = {"macro_f1": float(f1_snr)}
 
     res = {
@@ -261,12 +270,23 @@ def main():
     # because cross_entropy requires it, so +1 is applied only on the way out.
     # Mixing the two conventions shifts every per-class attribution by one
     # class -- that is what corrupted results/per_class/summary.json.
-    np.savez_compressed(
-        args.out.replace(".json", "_preds.npz"),
-        yte=trues + 1,
-        yp=preds + 1,
-        ste=st
-    )
+    if getattr(args, "class_subset", None):
+        from src.subset_utils import remap_predictions_to_original
+        trues_mapped = remap_predictions_to_original(trues, subset_classes, is_1_based=False)
+        preds_mapped = remap_predictions_to_original(preds, subset_classes, is_1_based=False)
+        np.savez_compressed(
+            args.out.replace(".json", "_preds.npz"),
+            yte=trues_mapped + 1,
+            yp=preds_mapped + 1,
+            ste=st
+        )
+    else:
+        np.savez_compressed(
+            args.out.replace(".json", "_preds.npz"),
+            yte=trues + 1,
+            yp=preds + 1,
+            ste=st
+        )
         
     print(f"Done! Test F1 = {test_f1:.4f}")
 

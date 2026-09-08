@@ -114,6 +114,7 @@ def main():
     parser.add_argument("--limit-groups", type=int, default=0)
     parser.add_argument("--max-temp", type=int, default=74)
     parser.add_argument("--no-throttle", action="store_true")
+    parser.add_argument("--class-subset", default=None)
     
     args = parser.parse_args()
 
@@ -137,6 +138,14 @@ def main():
     if args.limit_groups > 0:
         mask = groups < args.limit_groups
         W, X, y, groups, snr = W[mask], X[mask], y[mask], groups[mask], snr[mask]
+        
+    if getattr(args, "class_subset", None):
+        from src.subset_utils import apply_subset, filter_dataset
+        subset_classes = apply_subset(args.class_subset)
+        W, X, y, groups, snr, _ = filter_dataset(W, X, y, groups, snr, subset_classes)
+        global N_CLASSES
+        N_CLASSES = len(subset_classes)
+        print(f"[subset] Applied subset {args.class_subset} (K={N_CLASSES} classes)")
 
     (i_tr, i_va, i_te), _ = grouped_stratified_split(y, groups, seed=args.split_seed)
     
@@ -158,7 +167,7 @@ def main():
     model = DualPQNet(gate_type=args.gate, n_samples=W.shape[1]).to(device)
     
     # Load stage-1-trained DASNet weights into the Deep Expert
-    dasnet_ckpt = os.path.join(args.checkpoint_dir, f"dasnet_seed{args.seed}_best.pt")
+    dasnet_ckpt = os.path.join(args.checkpoint_dir, f"dasnet_seed{args.seed}_results_best.pt")
     if not os.path.exists(dasnet_ckpt):
         raise FileNotFoundError(f"Cannot find stage-1-trained DASNet checkpoint: {dasnet_ckpt}")
         
@@ -236,7 +245,7 @@ def main():
                 
         preds = np.concatenate(preds)
         trues = np.concatenate(trues)
-        val_f1 = f1_score(trues, preds, labels=np.arange(29), average="macro")
+        val_f1 = f1_score(trues, preds, labels=np.arange(N_CLASSES), average="macro")
 
         print(f"Epoch {epoch:02d} | Val F1: {val_f1:.4f}")
 
@@ -270,7 +279,7 @@ def main():
     preds = np.concatenate(preds)
     trues = np.concatenate(trues)
     
-    test_f1 = f1_score(trues, preds, labels=np.arange(29), average="macro")
+    test_f1 = f1_score(trues, preds, labels=np.arange(N_CLASSES), average="macro")
     
     # Per-SNR Evaluation
     res_snr = {}
@@ -278,7 +287,7 @@ def main():
     for snr_val in [999, 40, 30, 20, 10, 0]:
         mask = (st == snr_val)
         if np.any(mask):
-            f1_snr = f1_score(trues[mask], preds[mask], labels=np.arange(29), average="macro")
+            f1_snr = f1_score(trues[mask], preds[mask], labels=np.arange(N_CLASSES), average="macro")
             res_snr[str(snr_val)] = {"macro_f1": float(f1_snr)}
 
     res = {
@@ -299,12 +308,23 @@ def main():
     # because cross_entropy requires it, so +1 is applied only on the way out.
     # Mixing the two conventions shifts every per-class attribution by one
     # class -- that is what corrupted results/per_class/summary.json.
-    np.savez_compressed(
-        args.out.replace(".json", "_preds.npz"),
-        yte=trues + 1,
-        yp=preds + 1,
-        ste=st
-    )
+    if getattr(args, "class_subset", None):
+        from src.subset_utils import remap_predictions_to_original
+        trues_mapped = remap_predictions_to_original(trues, subset_classes, is_1_based=False)
+        preds_mapped = remap_predictions_to_original(preds, subset_classes, is_1_based=False)
+        np.savez_compressed(
+            args.out.replace(".json", "_preds.npz"),
+            yte=trues_mapped + 1,
+            yp=preds_mapped + 1,
+            ste=st
+        )
+    else:
+        np.savez_compressed(
+            args.out.replace(".json", "_preds.npz"),
+            yte=trues + 1,
+            yp=preds + 1,
+            ste=st
+        )
 
     # Keep the stage-2 weights. Without this the final proposed model cannot be
     # re-evaluated or inspected after the run: only its scalar metrics survive.
