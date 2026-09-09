@@ -1,0 +1,105 @@
+{
+ "model": "dualpq",
+ "config": {
+  "gate": "snr_learned",
+  "data_wave": "data/waveforms.npz",
+  "data_feat": "data/dataset.npz",
+  "out": "results/subset_top21/dualpq_seed0_results.json",
+  "epochs": 40,
+  "batch": 32,
+  "lr": 0.001,
+  "lr_dst": 0.005,
+  "warmup": 3,
+  "patience": 12,
+  "seed": 0,
+  "split_seed": 0,
+  "workers": 2,
+  "head": "softmax",
+  "no_aug": false,
+  "p_aug": 0.5,
+  "limit_groups": 30,
+  "max_temp": 74,
+  "no_throttle": false,
+  "classical_only": false,
+  "no_amp": false,
+  "class_subset": "top21",
+  "pilot": false,
+  "n_params": 1525485,
+  "best_epoch": 36,
+  "wall_min": 176.09406763991657
+ },
+ "val": {
+  "macro_f1": 0.8479247870305193,
+  "balanced_acc": 0.8478835978835978,
+  "accuracy": 0.8478835978835979
+ },
+ "test": {
+  "macro_f1": 0.849521041054482,
+  "balanced_acc": 0.8489417989417989,
+  "accuracy": 0.8489417989417989
+ },
+ "test_per_snr": {
+  "999": {
+   "macro_f1": 0.9920626099842548,
+   "balanced_acc": 0.9920634920634919,
+   "accuracy": 0.9920634920634921
+  },
+  "40": {
+   "macro_f1": 0.9905013297344499,
+   "balanced_acc": 0.9904761904761902,
+   "accuracy": 0.9904761904761905
+  },
+  "30": {
+   "macro_f1": 0.9808236731178287,
+   "balanced_acc": 0.9809523809523808,
+   "accuracy": 0.9809523809523809
+  },
+  "20": {
+   "macro_f1": 0.9430807106885688,
+   "balanced_acc": 0.9428571428571427,
+   "accuracy": 0.9428571428571428
+  },
+  "10": {
+   "macro_f1": 0.7895529554809579,
+   "balanced_acc": 0.7873015873015874,
+   "accuracy": 0.7873015873015873
+  },
+  "0": {
+   "macro_f1": 0.39876227984756224,
+   "balanced_acc": 0.4,
+   "accuracy": 0.4
+  }
+ },
+ "gate_stats": {
+  "0": {
+   "mean": 0.26620569825172424,
+   "median": 0.275146484375,
+   "std": 0.0308942012488842
+  },
+  "999": {
+   "mean": 0.8012183904647827,
+   "median": 0.81298828125,
+   "std": 0.061735138297080994
+  },
+  "40": {
+   "mean": 0.7702857851982117,
+   "median": 0.7880859375,
+   "std": 0.04864862188696861
+  },
+  "10": {
+   "mean": 0.4491024911403656,
+   "median": 0.46484375,
+   "std": 0.04890964552760124
+  },
+  "20": {
+   "mean": 0.6132163405418396,
+   "median": 0.6298828125,
+   "std": 0.05123893916606903
+  },
+  "30": {
+   "mean": 0.7183624505996704,
+   "median": 0.73486328125,
+   "std": 0.04653263837099075
+  }
+ }
+}
