@@ -1,0 +1,105 @@
+{
+ "model": "dualpq",
+ "config": {
+  "gate": "snr_learned",
+  "data_wave": "data/waveforms.npz",
+  "data_feat": "data/dataset.npz",
+  "out": "results/subset_top25/dualpq_seed0_results.json",
+  "epochs": 40,
+  "batch": 32,
+  "lr": 0.001,
+  "lr_dst": 0.005,
+  "warmup": 3,
+  "patience": 12,
+  "seed": 0,
+  "split_seed": 0,
+  "workers": 2,
+  "head": "softmax",
+  "no_aug": false,
+  "p_aug": 0.5,
+  "limit_groups": 30,
+  "max_temp": 74,
+  "no_throttle": false,
+  "classical_only": false,
+  "no_amp": false,
+  "class_subset": "top25",
+  "pilot": false,
+  "n_params": 1527541,
+  "best_epoch": 38,
+  "wall_min": 372.6264862278835
+ },
+ "val": {
+  "macro_f1": 0.8219410120368853,
+  "balanced_acc": 0.8220000000000001,
+  "accuracy": 0.822
+ },
+ "test": {
+  "macro_f1": 0.816342526994027,
+  "balanced_acc": 0.8155555555555556,
+  "accuracy": 0.8155555555555556
+ },
+ "test_per_snr": {
+  "999": {
+   "macro_f1": 0.9461021276639167,
+   "balanced_acc": 0.9493333333333333,
+   "accuracy": 0.9493333333333334
+  },
+  "40": {
+   "macro_f1": 0.9774161246822044,
+   "balanced_acc": 0.9773333333333334,
+   "accuracy": 0.9773333333333334
+  },
+  "30": {
+   "macro_f1": 0.9613214509901249,
+   "balanced_acc": 0.9613333333333334,
+   "accuracy": 0.9613333333333334
+  },
+  "20": {
+   "macro_f1": 0.9137902674513586,
+   "balanced_acc": 0.9133333333333333,
+   "accuracy": 0.9133333333333333
+  },
+  "10": {
+   "macro_f1": 0.7303707909244078,
+   "balanced_acc": 0.7280000000000001,
+   "accuracy": 0.728
+  },
+  "0": {
+   "macro_f1": 0.35973623451141457,
+   "balanced_acc": 0.364,
+   "accuracy": 0.364
+  }
+ },
+ "gate_stats": {
+  "0": {
+   "mean": 0.2439609318971634,
+   "median": 0.25146484375,
+   "std": 0.030372465029358864
+  },
+  "999": {
+   "mean": 0.8590162992477417,
+   "median": 0.8681640625,
+   "std": 0.0685930922627449
+  },
+  "40": {
+   "mean": 0.8235992789268494,
+   "median": 0.84228515625,
+   "std": 0.052308183163404465
+  },
+  "10": {
+   "mean": 0.45055443048477173,
+   "median": 0.4664306640625,
+   "std": 0.05145731195807457
+  },
+  "20": {
+   "mean": 0.6448130011558533,
+   "median": 0.66162109375,
+   "std": 0.05524149164557457
+  },
+  "30": {
+   "mean": 0.7659856677055359,
+   "median": 0.7822265625,
+   "std": 0.050160013139247894
+  }
+ }
+}
