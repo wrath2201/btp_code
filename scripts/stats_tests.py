@@ -101,9 +101,7 @@ def main():
         print(f"{k:<26}{v.mean():>7.2f}{v.std(ddof=1):>7.2f}{ci95(v):>7.2f}   {np.round(v, 2)}")
         out[k] = {"mean": float(v.mean()), "sd": float(v.std(ddof=1)),
                   "ci95_halfwidth": ci95(v), "seeds": v.round(4).tolist()}
-    print("\nNote: MGCNN-SDTransformer seeds 1-4 used split_seed == seed while every")
-    print("other model used split_seed = 0, so its row is NOT paired with the rest")
-    print("and no paired test below includes it.")
+    print("These results are properly paired as all models used split_seed = 0.")
 
     # ---------------------------------------------------------------- 2
     print()

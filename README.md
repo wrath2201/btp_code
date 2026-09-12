@@ -76,7 +76,7 @@ All figures reproducible with `python scripts/stats_tests.py`.
 | Classical Ensemble (validation-selected) | 71.52 | 0.84 | ± 1.04 |
 | Classical Ensemble (`geometric_vote`, fixed) | 72.02 | 0.27 | ± 0.34 |
 | DASNet | 69.72 | 9.11 | ± 11.31 |
-| MGCNN-SDTransformer † | 66.59 | 0.98 | ± 1.22 |
+| MGCNN-SDTransformer † | 66.13 | 0.77 | ± 1.22 |
 | Original DualPQ-D | 61.63 | 15.58 | ± 19.35 |
 | **Frozen-DASNet DualPQ** | **74.46** | **1.08** | **± 1.34** |
 
@@ -294,7 +294,7 @@ For a full manifest, see `results/FINAL_RESULTS.md`.
    architecture. Note also that stage-2 validation peaks at epoch 0, 2, 5, 6
    and 15 across the five seeds — seed 1's best model precedes any training.
 8. Prediction arrays for Frozen-DASNet DualPQ and Original DualPQ-D are not
-   committed, so the per-class metrics in `results/per_class_snr_frozen/`
+   committed, so the per-class metrics in `results/per_class_snr/frozen_dasnet_dualpq/`
    cannot currently be re-derived from this repository.
 9. Baseline capacity and ensemble selection are disclosed in §7; the
    headline margin against the strongest fixed classical variant is +2.44 pp,

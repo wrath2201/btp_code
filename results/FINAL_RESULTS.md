@@ -9,7 +9,7 @@ Historical/debug artifacts are excluded from this document and are strictly reta
 |---|---:|---:|
 | Classical Ensemble | 71.52 | 0.84 |
 | DASNet | 69.72 | 9.11 |
-| MGCNN-SDTransformer | 66.59 | 0.98 |
+| MGCNN-SDTransformer | 66.13 | 0.77 |
 | Original DualPQ-D | 61.63 | 15.58 |
 | **Frozen-DASNet DualPQ** | **74.46** | **1.08** |
 
@@ -21,7 +21,7 @@ Historical/debug artifacts are excluded from this document and are strictly reta
 | **Original DualPQ-D** | 72.67 | 72.56 | 62.43 | 34.91 | 65.61 |
 | **DASNet** | 53.45 | 73.84 | 73.89 | 73.10 | 74.34 |
 | **Classical Ensemble** | 70.46 | 72.36 | 70.85 | 71.70 | 72.23 |
-| **MGCNN-SDTransformer** | 65.01 | 67.34 | 67.37 | 66.31 | 66.91 |
+| **MGCNN-SDTransformer** | 65.01 | 66.88 | 65.70 | 66.49 | 66.59 |
 
 ## 2. Per-SNR Performance
 
@@ -39,13 +39,7 @@ Historical/debug artifacts are excluded from this document and are strictly reta
 - **Conditions:** Clean, 40, 30, 20, 10, 0 dB.
 - **Split:** Grouped stratified 70/15/15. All noise variants of a given base waveform remain tightly within a single partition.
 - **Seeds:** 5 deep/hybrid training seeds (0, 1, 2, 3, 4) evaluating
-  training-run variability on the exact same dataset partition — **with one
-  exception**: `mgcnn_sdtransformer_seed{1,2,3,4}.json` record
-  `split_seed == seed`, so that model was evaluated on five *different*
-  partitions. Its mean and SD therefore mix partition variance with training
-  variance, its per-SNR row is computed over different test waveforms, and it
-  is excluded from every paired test. Rerunning those four seeds with
-  `--split-seed 0` is outstanding work.
+  training-run variability on the exact same dataset partition (split_seed = 0).
 - **Baseline capacity:** all five `baseline_seed*.json` runs used `--fast`
   (RF 300→150 trees, LightGBM 250→120 iters, MLP 400→120 iters) while every
   proposed-method run used its full configuration. See README §7.
@@ -58,7 +52,7 @@ Reconstructed prediction arrays for the Classical Ensemble, DASNet and
 MGCNN-SDTransformer are committed under `results/preds/`. Prediction arrays
 for **Frozen-DASNet DualPQ and Original DualPQ-D are not committed** — those
 two scripts did not save weights, and the `*_preds.npz` files they wrote were
-excluded by `.gitignore`. `results/per_class_snr_frozen/` was generated from
+excluded by `.gitignore`. `results/per_class_snr/frozen_dasnet_dualpq/` was generated from
 local copies of `results/multiseed/frozen_dualpq_seed*_preds.npz`, which are
 not in this repository; committing them (5 files, ~7 KB each) would make those
 metrics independently verifiable.

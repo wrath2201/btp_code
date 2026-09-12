@@ -51,7 +51,7 @@ never occur at test time. The isolating run is OPEN-4.
 | **Frozen-DASNet DualPQ** | 91.18±1.42 | 91.69±1.05 | 89.56±0.93 | 82.36±0.95 | 62.36±1.45 | 27.00±2.71 | 74.46±1.08 |
 
 Standard deviations corrected to match `results/FINAL_RESULTS.md` and
-`results/per_class_snr_frozen/`; the earlier row understated every one of them
+`results/per_class_snr/frozen_dasnet_dualpq/`; the earlier row understated every one of them
 (e.g. 0 dB ±2.4 against the actual ±2.71). Regenerate with
 `python scripts/stats_tests.py`.
 

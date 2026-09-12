@@ -430,7 +430,7 @@ if __name__ == "__main__":
     ap.add_argument("--init-from", default=None,
                     help="warm-start weights from a checkpoint (.pt)")
     ap.add_argument("--class-subset", default=None,
-                    help="train and evaluate on a specific class subset (e.g., top17)")
+                    help="train and evaluate on a specific class subset (e.g., easy17)")
     ap.add_argument("--pilot", action="store_true",
                     help="shortcut: --limit-groups 30 --epochs 8")
     args = ap.parse_args()

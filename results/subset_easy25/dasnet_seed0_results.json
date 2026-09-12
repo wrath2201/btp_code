@@ -2,7 +2,7 @@
  "model": "dasnet",
  "config": {
   "data": "data/waveforms.npz",
-  "out": "results/subset_top25/dasnet_seed0_results.json",
+  "out": "results/subset_easy25/dasnet_seed0_results.json",
   "baseline": "results/results.json",
   "epochs": 50,
   "batch": 32,
@@ -22,7 +22,7 @@
   "max_temp": 74,
   "no_throttle": false,
   "init_from": null,
-  "class_subset": "top25",
+  "class_subset": "easy25",
   "pilot": false,
   "n_params": 1289755,
   "best_epoch": 50,

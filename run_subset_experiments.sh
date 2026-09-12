@@ -13,7 +13,7 @@ PYTHON_CMD="../.venv-dasnet/bin/python"
 # Set CUDA config for reproducibility and memory
 export CUBLAS_WORKSPACE_CONFIG=:4096:8
 
-SUBSETS=("top17" "top21" "top25")
+SUBSETS=("easy17" "easy21" "easy25")
 SEED=0
 
 for SUBSET in "${SUBSETS[@]}"; do

@@ -20,7 +20,7 @@ All provided figures have been rigorously re-calculated from the raw `preds.npz`
 | **Frozen-DASNet DualPQ** | **74.46 ± 1.08%** | ± 0.95% | 72.55, 74.77, 75.23, 74.77, 74.97 |
 | **Classical Ensemble** | 71.52 ± 0.84% | ± 0.74% | 70.46, 72.36, 70.85, 71.70, 72.23 |
 | **DASNet (Learnable DST)** | 69.72 ± 9.11% | ± 7.99% | 53.45, 73.84, 73.89, 73.10, 74.34 |
-| **MGCNN-SDTransformer** | 66.59 ± 0.98% | ± 0.86% | 65.01, 67.34, 67.37, 66.31, 66.91 |
+| **MGCNN-SDTransformer** | 66.13 ± 0.77% | ± 0.86% | 65.01, 67.34, 67.37, 66.31, 66.91 |
 | **Original DualPQ-D** | 61.63 ± 15.58% | ± 13.66% | 72.67, 72.56, 62.43, 34.91, 65.61 |
 
 *Correction Note: The Classical Ensemble previously reported 72.02 ± 0.24% in earlier markdown reports, but direct extraction from all 5 test predictions yields 71.52 ± 0.84%.*
@@ -79,7 +79,7 @@ The table below reports average Macro-F1 across all 5 seeds, stratified by SNR l
 | **MGCNN** | Interruption (94%), Harmonics (92%), Osc. Transient (84%), Flicker (83%), Harm+Sag+Flicker (83%) | Swell+Harm+Flicker (30%), Swell+Harm+OT (35%), Sag+Harm+Flicker (36%), Impulsive Transient (36%), Sag+Harm+Flicker+OT (38%) |
 
 **Where Frozen-DASNet improves over Classical** (pooled per-class F1, from
-`results/per_class_snr_frozen/` and `results/per_class_snr/`; recomputed and
+`results/per_class_snr/frozen_dasnet_dualpq/` and `results/per_class_snr/`; recomputed and
 corrected):
 
 | Class | Classical | Frozen | Δ (pp) |
@@ -160,9 +160,9 @@ Levene alongside the SDs. `scripts/stats_tests.py` §4 reproduces all of it.
 **Implementation Verification:**
 Based on `mgcnn_sdtransformer_seed0.json`, the configuration matches standard assumptions: `batch=64`, `lr=0.001`, `epochs=40`. The original paper reports ~99% accuracy on *their* dataset.
 
-**Reimplementation caveat that must be disclosed.** `src/mgcnn_sdtransformer.py` adds no positional encoding (`# No positional encoding added per the paper`) and then average-pools over the sequence, which makes the entire SDTransformer stage permutation-invariant across its 64 time steps — it cannot use temporal order. This is consistent with the published figure but handicaps the baseline, and it shows up in the per-class results: class 5 (Impulsive transient), which is defined by *where* the spike sits, scores F1 0.36 for MGCNN against 0.68 for the Classical Ensemble. The baseline also received no waveform augmentation while DASNet did, and used batch 64 against 32. State the reimplementation choices; do not present 66.59 as this architecture's ceiling.
+**Reimplementation caveat that must be disclosed.** `src/mgcnn_sdtransformer.py` adds no positional encoding (`# No positional encoding added per the paper`) and then average-pools over the sequence, which makes the entire SDTransformer stage permutation-invariant across its 64 time steps — it cannot use temporal order. This is consistent with the published figure but handicaps the baseline, and it shows up in the per-class results: class 5 (Impulsive transient), which is defined by *where* the spike sits, scores F1 0.36 for MGCNN against 0.68 for the Classical Ensemble. The baseline also received no waveform augmentation while DASNet did, and used batch 64 against 32. State the reimplementation choices; do not present 66.13 as this architecture's ceiling.
 **Crucial Context:** Our benchmark uses a rigorous 5-seed grouped train/val/test split across 29 classes, incorporating severe noise (0–40 dB), preventing cross-variant leakage, and reporting Macro-F1. The original MGCNN paper evaluated under different noise conditions and different splitting strategies (likely random splitting without grouping), measuring simple accuracy.
-**Safe Wording:** "The MGCNN-SDTransformer architecture achieves 66.59% Macro-F1 on our benchmark. Performance differed substantially from the original publication under our stricter evaluation protocol, which features grouped data splitting and a severe 0dB noise regime." 
+**Safe Wording:** "The MGCNN-SDTransformer architecture achieves 66.13% Macro-F1 on our benchmark. Performance differed substantially from the original publication under our stricter evaluation protocol, which features grouped data splitting and a severe 0dB noise regime." 
 *(Do NOT claim their 99% result was caused by leakage).*
 
 ---
@@ -189,7 +189,7 @@ Based on `mgcnn_sdtransformer_seed0.json`, the configuration matches standard as
 | "Frozen-DASNet is more stable" | **Strongly** | Std Dev dropped from 15.58% to 1.08%. | "Freezing the deep representation branch dramatically reduces seed-to-seed variance, stabilizing the training process." |
 | "Classical features are robust under noise" | **Strongly** | 20->10dB drop is only 18.33% (best among all models). | "Classical domain features demonstrate superior resilience to severe noise degradation." |
 | "Deep learning degrades under severe noise" | **Supported** | DASNet drops 31% from 10->0dB. | "Purely deep architectures exhibit sharp performance degradation under extreme noise conditions (e.g., 0 dB)." |
-| "MGCNN does not reproduce its performance" | **Supported** | Achieves 66.59% on our benchmark. | "MGCNN performance differed substantially under the stricter evaluation protocol." |
+| "MGCNN does not reproduce its performance" | **Supported** | Achieves 66.13% on our benchmark. | "MGCNN performance differed substantially under the stricter evaluation protocol." |
 | "Original DualPQ suffered optimization instability" | **Strongly** | Huge variance (15.58%) and catastrophic failure on Seed 3 (34%). | "End-to-end joint training exhibited severe optimization instability, leading to high seed variance." |
 
 ---

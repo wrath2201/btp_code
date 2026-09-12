@@ -52,7 +52,7 @@ Ordered by what a reviewer hits first.
 
 `mgcnn_sdtransformer_seed{1,2,3,4}.json` record `split_seed == seed`. Every
 other model used `split_seed = 0`. That model alone was trained and evaluated
-on four different partitions, so its 66.59 ± 0.98 mixes partition variance
+on four different partitions, so its 66.13 ± 0.77 mixes partition variance
 with training variance and its per-SNR row is computed over different test
 waveforms.
 
@@ -75,7 +75,7 @@ Then regenerate: `scripts/reconstruct_preds.py mgcnn --seed $i --split-seed 0`,
 
 ### OPEN-2 · Commit the Frozen-DASNet DualPQ and Original DualPQ-D prediction arrays — 1 command
 
-`results/per_class_snr_frozen/frozen_dasnet_dualpq/metrics.json` cites five
+`results/per_class_snr/frozen_dasnet_dualpq/metrics.json` cites five
 `results/multiseed/frozen_dualpq_seed*_preds.npz` files that are not in the
 repository. Those numbers reproduce the published values exactly, so the files
 are genuine — they were simply never committed, because `.gitignore` excluded

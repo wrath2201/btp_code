@@ -4,8 +4,8 @@
   "gate": "snr_learned",
   "data_wave": "data/waveforms.npz",
   "data_feat": "data/dataset.npz",
-  "out": "results/subset_top17/frozen_dualpq_seed0_results.json",
-  "checkpoint_dir": "results/subset_top17",
+  "out": "results/subset_easy17/frozen_dualpq_seed0_results.json",
+  "checkpoint_dir": "results/subset_easy17",
   "epochs": 40,
   "batch": 32,
   "lr": 0.001,
@@ -17,7 +17,7 @@
   "limit_groups": 0,
   "max_temp": 74,
   "no_throttle": false,
-  "class_subset": "top17",
+  "class_subset": "easy17",
   "best_epoch": 8
  },
  "val": {

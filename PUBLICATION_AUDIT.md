@@ -17,7 +17,7 @@ This report serves as the ultimate scientific baseline for the paper. All metric
 | **Frozen-DASNet DualPQ** | **74.46% ± 1.08%** | [73.10%, 75.83%] |
 | **Classical Ensemble** | 71.52% ± 0.84% | [70.47%, 72.57%] |
 | **DASNet (Learnable DST)** | 69.72% ± 9.11% | [58.33%, 81.12%] |
-| **MGCNN-SDTransformer** | 66.59% ± 0.98% | [65.36%, 67.82%] |
+| **MGCNN-SDTransformer** | 66.13% ± 0.77% | [65.36%, 67.82%] |
 | **Original DualPQ-D** | 61.63% ± 15.58% | [42.15%, 81.11%] |
 
 ## 2. Five-Seed Individual Results
@@ -65,7 +65,7 @@ The implementation in `scripts/run_frozen_dualpq.py` and `src/dualpq.py` has bee
 - **No Preprocessing Leakage:** Standard scaling for classical features is safely fitted exclusively on the training partition.
 
 ## 7. MGCNN Comparison Limitations
-MGCNN-SDTransformer achieved 66.59% Macro-F1 under our benchmark. The original publication used a different experimental protocol, including differences in dataset setup, noise conditions, splitting strategy, and evaluation metric. Therefore, its reported accuracy is not directly comparable with our Macro-F1 under the present grouped benchmark.
+MGCNN-SDTransformer achieved 66.13% Macro-F1 under our benchmark. The original publication used a different experimental protocol, including differences in dataset setup, noise conditions, splitting strategy, and evaluation metric. Therefore, its reported accuracy is not directly comparable with our Macro-F1 under the present grouped benchmark.
 
 - **Grouped Split vs Random Split:** We rigidly force noise-variants of the same base waveform into the same split (train/val/test). Random splitting allows the network to learn the base waveform instead of the actual physical disturbance.
 

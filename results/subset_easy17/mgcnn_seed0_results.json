@@ -3,8 +3,8 @@
  "config": {
   "data_wave": "data/waveforms.npz",
   "data_feat": "data/dataset.npz",
-  "out": "results/subset_top17/mgcnn_seed0_results.json",
-  "save_ckpt": "results/subset_top17/mgcnn_seed0_best.pt",
+  "out": "results/subset_easy17/mgcnn_seed0_results.json",
+  "save_ckpt": "results/subset_easy17/mgcnn_seed0_best.pt",
   "epochs": 40,
   "batch": 64,
   "lr": 0.001,
@@ -15,7 +15,7 @@
   "workers": 2,
   "max_temp": 74,
   "no_throttle": false,
-  "class_subset": "top17",
+  "class_subset": "easy17",
   "best_epoch": 25
  },
  "val": {

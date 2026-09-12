@@ -47,7 +47,7 @@ The authoritative results are directly extracted from saved prediction artifacts
      margin in the paper is quoted against geometric_vote, 72.02 ± 0.27.
      See README.md section 7. -->
 | DASNet | 69.72% ± 9.11% |
-| MGCNN-SDTransformer | 66.59% ± 0.98% |
+| MGCNN-SDTransformer | 66.13% ± 0.77% |
 | Original DualPQ-D | 61.63% ± 15.58% |
 
 ---

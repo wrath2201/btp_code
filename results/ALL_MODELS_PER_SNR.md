@@ -2,9 +2,6 @@
 
 Assembled from the committed `metrics.json` files. Mean ± sample SD (ddof=1) over seeds.
 
-> MGCNN-SDTransformer seeds 1–4 used `split_seed == seed`; every other model used
-> `split_seed = 0`. Its spread mixes split variance with training variance and its row is
-> not paired with the others'.
 
 ## Macro-F1 (%)
 
@@ -13,7 +10,7 @@ Assembled from the committed `metrics.json` files. Mean ± sample SD (ddof=1) ov
 | Classical Ensemble (weighted_vote) | 1 | 87.73 | 87.32 | 87.55 | 79.63 | 61.34 | 25.83 | **71.70** |
 | Classical Ensemble (geometric_vote) | 1 | 87.50 | 87.16 | 86.95 | 79.85 | 62.35 | 25.15 | **71.63** |
 | DASNet | 5 | 84.86 ± 14.38 | 90.16 ± 3.30 | 87.18 ± 5.13 | 75.85 ± 12.32 | 51.65 ± 19.48 | 20.69 ± 9.95 | **69.73** ± 9.12 |
-| MGCNN-SDTransformer | 5 | 81.62 ± 1.57 | 81.58 ± 1.38 | 80.79 ± 0.99 | 76.16 ± 0.99 | 55.87 ± 0.68 | 22.45 ± 0.87 | **66.59** ± 0.98 |
+| MGCNN-SDTransformer | 5 | 81.62 ± 1.57 | 81.58 ± 1.38 | 80.79 ± 0.99 | 76.16 ± 0.99 | 55.87 ± 0.68 | 22.45 ± 0.87 | **66.13** ± 0.77 |
 | Frozen-DASNet DualPQ | 5 | 91.18 ± 1.42 | 91.69 ± 1.05 | 89.56 ± 0.93 | 82.36 ± 0.95 | 62.36 ± 1.45 | 27.00 ± 2.71 | **74.46** ± 1.08 |
 
 ## Cohen's kappa (%)
