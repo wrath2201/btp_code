@@ -311,8 +311,7 @@ estimate. Cheap, and it makes the energy features approximately SNR-invariant.
 
 **5. Train with continuously sampled SNR** — SNR ~ U(−5, 45) dB per waveform —
 instead of 5 discrete levels. Section 6 shows the model memorises level-specific
-boundaries and scores 0.051 at an unseen 0 dB. Continuous sampling removes the
-+0.21 extrapolation gap and costs nothing extra to generate.
+boundaries and scores 0.051 at an unseen 0 dB. Continuous SNR sampling was explored as a strategy for improving robustness across noise levels, but unseen-SNR generalization was not evaluated for the final Frozen-DASNet DualPQ protocol and remains future work.
 
 **6. Denoise before extraction.** S-domain or wavelet soft-thresholding, or a
 Wiener filter built from the estimated noise PSD. At 10 and 0 dB this is worth

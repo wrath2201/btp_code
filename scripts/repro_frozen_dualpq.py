@@ -113,12 +113,11 @@ class Stage2(nn.Module):
         super().__init__()
         self.classical_expert = ClassicalExpert(in_features=n_feat, out_dim=256,
                                                 dropout=dropout)
-        self.deep_dropout = nn.Dropout(dropout)
         self.fc = nn.Linear(512, N_CLASSES)
 
     def forward(self, z_deep, x_feat):
         z_c = self.classical_expert(x_feat)
-        return self.fc(torch.cat([self.deep_dropout(z_deep), z_c], dim=-1))
+        return self.fc(torch.cat([z_deep, z_c], dim=-1))
 
 
 def main():

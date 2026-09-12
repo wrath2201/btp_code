@@ -10,7 +10,8 @@ failure mode of the fixed-feature ensemble in this repo:
     modulated by FiLM (Perez et al. 2018) from a *measured* SNR estimate --
     the same snr_est_db definition as features.py group (H), recomputed from
     the input waveform so it stays consistent under noise augmentation.
-    Motivated by the 0.21 F1 unseen-SNR extrapolation gap (unseen_snr.json).
+    The SNR-conditioned FiLM pathway provides explicit conditioning on measured SNR;
+    unseen-SNR generalization is not evaluated by the final Frozen-DASNet DualPQ protocol and remains future work.
  3. Head: standard softmax (label smoothing) or an evidential Dirichlet head
     (Sensoy et al. 2018) whose uncertainty can be checked against the
     matched-filter ceilings of the four near-degenerate class pairs

@@ -11,7 +11,7 @@ protocol as the feature ensemble (src/pipeline.py):
 
 Training augmentation (training groups only -- no leakage):
   * fresh AWGN at a CONTINUOUS uniform SNR in [0, 40] dB drawn per sample from
-    the group's clean waveform (attacks the unseen-SNR extrapolation gap);
+    the group's clean waveform (intended to improve robustness across noise levels);
   * random polarity flip.
 
 Usage

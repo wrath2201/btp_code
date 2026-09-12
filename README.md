@@ -279,9 +279,10 @@ For a full manifest, see `results/FINAL_RESULTS.md`.
    is outstanding.
 5. Generalization to unseen real-world operating conditions remains future
    work. The one extrapolation measurement in the repository
-   (`results/unseen_snr.json`) reports a 0.21 macro-F1 gap at 0 dB for the
-   classical ensemble on unseen noise levels, and has not been repeated for
-   the proposed method.
+   (`results/unseen_snr.json`) reports a 0.21 macro-F1 gap at 0 dB; however,
+   this is a diagnostic result belonging solely to the classical ensemble. It was
+   not re-measured for the final proposed method, and therefore no unseen-SNR
+   generalization or improvement is claimed.
 6. The frozen-vs-joint comparison changes three variables simultaneously
    (freezing, augmentation, mixed precision) and the joint baseline is trained
    on mismatched (waveform, feature) pairs. The contribution of freezing alone
